@@ -14,3 +14,8 @@ dist/
 node_modules/
 static/css/main.css
 .claude/
+# Local staging dir for tender document uploads (TENDER_UPLOAD_STAGING_DIR) —
+# holds real client documents before a Celery task moves them to R2. Created
+# on demand via os.makedirs(exist_ok=True) in apps/tenders/views.py, so it
+# doesn't need to exist in a fresh checkout.
+tender_staging/
