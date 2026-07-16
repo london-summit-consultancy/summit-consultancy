@@ -24,6 +24,16 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY . /code
 RUN uv sync --frozen --no-dev
 
+# Put the project venv on PATH so a bare `python`/`gunicorn`/`celery` (without
+# `uv run`) resolves to the installed deps. This makes the release_command work
+# regardless of how Fly invokes it: the app's server-side release_command is a
+# stale `python manage.py migrate --noinput` (from an earlier `fly launch`) that
+# `flyctl deploy` isn't overwriting, and bare `python` would otherwise hit the
+# base image's Django-less system interpreter and exit 1 before any log flushes.
+# Belt-and-suspenders with fly.toml's `uv run --no-sync python manage.py migrate`.
+ENV PATH="/code/.venv/bin:$PATH" \
+    VIRTUAL_ENV="/code/.venv"
+
 RUN chmod +x bin/start.sh
 
 EXPOSE 8000
