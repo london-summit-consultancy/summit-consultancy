@@ -17,10 +17,20 @@ CSRF_COOKIE_SECURE = True
 # (drives SECURE_SSL_REDIRECT / secure-cookie behaviour).
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# Fly app hostnames are stable and known up front (<app-name>.fly.dev, set in
-# fly.toml's `app` key), unlike Render's per-deploy hostname — so no dynamic
-# detection is needed here. Set ALLOWED_HOSTS via `fly secrets set` to that
-# hostname (plus any custom domain once one is attached).
+# Fly app hostnames are <app-name>.fly.dev. Rather than pinning the hostname in
+# fly.toml's [env] (which drifts the moment the image is deployed to a different
+# app via `flyctl deploy -a <other-app>`), always trust the running app's own
+# hostname: Fly injects FLY_APP_NAME into every Machine, so <FLY_APP_NAME>.fly.dev
+# is authoritative and self-correcting. Any ALLOWED_HOSTS from the env (custom
+# domains, extra hosts) is merged on top. Without this, deploying to an app whose
+# name differs from the pinned host yields DisallowedHost (400) on every request,
+# failing Fly health checks right after the release_command succeeds.
+_fly_app_name = env("FLY_APP_NAME", default="")
+if _fly_app_name:
+    _fly_host = f"{_fly_app_name}.fly.dev"
+    if _fly_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS = [*ALLOWED_HOSTS, _fly_host]
+
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host}" for host in ALLOWED_HOSTS if host and not host.startswith(".")
 ]
@@ -37,14 +47,34 @@ CSRF_TRUSTED_ORIGINS = [
 # default is smtp.office365.com — NOT smtp-mail.outlook.com, which is the
 # consumer Outlook.com (personal @outlook.com/@hotmail.com) endpoint, not the
 # Microsoft 365 organizational-mailbox one this OAuth setup targets.
+# These four MS365 secrets are OPTIONAL at settings-import time (default="").
+# apps/core/ms365_smtp.py already gates sending on is_enabled() — an empty value
+# means the backend cleanly reports "not configured" instead of the whole
+# settings module raising ImproperlyConfigured at import. That import-time raise
+# is what made `manage.py migrate` (the Fly release_command, which touches only
+# the DB and needs no mail creds) crash before any log line flushed. Set them via
+# `fly secrets set` to turn email on; until then, outbound mail (all enqueued to
+# Celery, never on the request path) fails its task and is retried/logged.
 EMAIL_BACKEND = "apps.core.ms365_smtp.Microsoft365EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST", default="smtp.office365.com")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_HOST_USER = env("MS365_SMTP_USER")
+EMAIL_HOST_USER = env("MS365_SMTP_USER", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
-MS365_TENANT_ID = env("MS365_TENANT_ID")
-MS365_CLIENT_ID = env("MS365_CLIENT_ID")
-MS365_CLIENT_SECRET = env("MS365_CLIENT_SECRET")
+MS365_TENANT_ID = env("MS365_TENANT_ID", default="")
+MS365_CLIENT_ID = env("MS365_CLIENT_ID", default="")
+MS365_CLIENT_SECRET = env("MS365_CLIENT_SECRET", default="")
+
+# MS365 SMTP only sends *as* the authenticated mailbox (or an address it holds
+# SendAs rights on), so default the visible From header and the inquiry-notice
+# recipient to that mailbox. Setting the single MS365_SMTP_USER secret then
+# yields a correct From with nothing else to configure; either can still be
+# overridden (e.g. a "London Summit Consultancy <info@…>" display-name form).
+# The address is never hardcoded here — it arrives only via the Fly secret.
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER or "noreply@example.com")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+INQUIRY_NOTIFICATION_EMAIL = env(
+    "INQUIRY_NOTIFICATION_EMAIL", default=EMAIL_HOST_USER or "info@example.com"
+)
 
 # Storage (Django 6 STORAGES dict) — static via WhiteNoise manifest. Public
 # media ("default") is NOT overridden here, so it stays on the filesystem
@@ -66,13 +96,17 @@ STORAGES = {
     # Confidential tender documents on a *private* Cloudflare R2 bucket, separate
     # from the public media bucket above. No ACLs (R2 has none), signed &
     # expiring URLs (querystring_auth=True) so objects are never world-readable.
+    # The four R2_* secrets default to "" so the settings module imports without
+    # them (the S3 backend is instantiated lazily, only when the staff-only tender
+    # tool actually reads/writes a document — never during migrate or on the public
+    # site). Set them via `fly secrets set` before using the tender tool in prod.
     "tender_documents": {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
         "OPTIONS": {
-            "bucket_name": env("R2_TENDER_BUCKET_NAME"),
-            "endpoint_url": env("R2_ENDPOINT_URL"),
-            "access_key": env("R2_ACCESS_KEY_ID"),
-            "secret_key": env("R2_SECRET_ACCESS_KEY"),
+            "bucket_name": env("R2_TENDER_BUCKET_NAME", default=""),
+            "endpoint_url": env("R2_ENDPOINT_URL", default=""),
+            "access_key": env("R2_ACCESS_KEY_ID", default=""),
+            "secret_key": env("R2_SECRET_ACCESS_KEY", default=""),
             "region_name": "auto",
             "signature_version": "s3v4",
             "addressing_style": "virtual",
