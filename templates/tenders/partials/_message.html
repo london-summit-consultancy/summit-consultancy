@@ -1,0 +1,14 @@
+{% comment %}One chat message. Params: message, own (bool). Body is autoescaped.{% endcomment %}
+<div class="flex gap-2.5 {% if own %}flex-row-reverse{% endif %}" data-message-id="{{ message.public_id }}">
+  <span class="shrink-0 h-8 w-8 rounded-full bg-brand text-on-brand text-xs font-semibold inline-flex items-center justify-center">
+    {{ message.author.get_full_name|slice:":1"|upper|default:"?" }}
+  </span>
+  <div class="max-w-[75%]">
+    <p class="text-xs text-ink-subtle {% if own %}text-right{% endif %}">
+      {{ message.author.get_full_name|default:"Unknown" }} · {{ message.created_at|date:"d M H:i" }}
+    </p>
+    <div class="mt-1 rounded-lg px-3 py-2 text-sm {% if own %}bg-brand text-on-brand{% else %}bg-surface-sunken text-ink{% endif %}">
+      {{ message.body|linebreaksbr }}
+    </div>
+  </div>
+</div>

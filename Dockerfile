@@ -1,0 +1,31 @@
+ARG PYTHON_VERSION=3.12-slim
+
+FROM python:${PYTHON_VERSION}
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_COMPILE_BYTECODE=1
+
+# libmagic1 — required by python-magic (apps.tenders MIME sniffing on upload).
+# No libpq-dev/gcc: psycopg[binary] ships precompiled wheels, nothing to build.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmagic1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+WORKDIR /code
+
+# Install deps in their own layer first so `uv sync` is cached across builds
+# that only change application code.
+COPY pyproject.toml uv.lock /code/
+RUN uv sync --frozen --no-dev --no-install-project
+
+COPY . /code
+RUN uv sync --frozen --no-dev
+
+RUN chmod +x bin/start.sh
+
+EXPOSE 8000
+
+CMD ["./bin/start.sh"]

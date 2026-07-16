@@ -1,0 +1,22 @@
+{
+  "name": "london-summit",
+  "private": true,
+  "scripts": {
+    "css:build": "tailwindcss -i assets/css/input.css -o static/css/main.css --minify",
+    "css:watch": "tailwindcss -i assets/css/input.css -o static/css/main.css --watch",
+    "js:build": "esbuild assets/js/experience/main.js --bundle --minify --format=iife --target=es2019 --outfile=static/js/experience.min.js",
+    "js:watch": "esbuild assets/js/experience/main.js --bundle --format=iife --target=es2019 --outfile=static/js/experience.min.js --watch",
+    "motion:build": "esbuild assets/js/motion/index.js --bundle --minify --format=iife --target=es2019 --outfile=static/js/motion.min.js"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.1",
+    "animejs": "^4.0.0",
+    "esbuild": "^0.25.0",
+    "gsap": "^3.15.0",
+    "tailwindcss": "^4.0.0",
+    "three": "^0.182.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
+  }
+}

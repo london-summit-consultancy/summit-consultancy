@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|default:"Our Services" }} | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+
+{% block content %}
+{# ==================== PREMIUM ENTERPRISE HERO ==================== #}
+<section class="relative bg-surface border-b border-line overflow-hidden py-16 lg:py-24">
+  {# Background structural grid pattern #}
+  <div class="absolute inset-0 bg-grid opacity-20 pointer-events-none"></div>
+  <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/5 blur-3xl pointer-events-none"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <p class="kicker mb-5" data-reveal>Our Services</p>
+    <h1 class="text-4xl lg:text-6xl font-bold text-ink leading-tight tracking-tight max-w-3xl mb-5" data-reveal>Comprehensive support, every phase</h1>
+    <p class="text-ink-muted text-lg max-w-2xl" data-reveal>Project management, cost control, and design support tailored to developers, contractors, and consultancies, audited under RICS frameworks.</p>
+  </div>
+</section>
+
+{# ==================== 01 · SERVICE INDEX ==================== #}
+<section class="bg-surface">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
+    <header class="mb-8">
+      <span class="neu-index mb-5">01</span>
+      <p class="kicker mt-5">Filter by stakeholder</p>
+    </header>
+
+    {# Buyer-type filter — neumorphic chips #}
+    <div class="flex flex-wrap gap-3 mb-12">
+      <a href="{% url 'services:landing' %}"
+         hx-get="{% url 'services:landing' %}"
+         hx-target="#service-list"
+         hx-swap="innerHTML"
+         hx-push-url="true"
+         class="chip {% if not selected_buyer %}is-active{% endif %}">
+        All Services
+      </a>
+      {% for category in all_categories %}
+      <a href="{% url 'services:landing' %}?buyer={{ category.buyer_type }}"
+         hx-get="{% url 'services:landing' %}?buyer={{ category.buyer_type }}"
+         hx-target="#service-list"
+         hx-swap="innerHTML"
+         hx-push-url="true"
+         class="chip {% if selected_buyer == category.buyer_type %}is-active{% endif %}">
+        {{ category.headline }}
+      </a>
+      {% endfor %}
+    </div>
+
+    {# Service list — HTMX target #}
+    <div id="service-list">
+      {% include "partials/_service_list.html" %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

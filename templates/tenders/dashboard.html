@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Analytics | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex items-end justify-between gap-4 mb-8">
+    <div>
+      <span class="kicker">Internal</span>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold mt-2">Analytics</h1>
+    </div>
+    <a href="{% url 'tenders:list' %}" class="btn btn-dark">← Pipeline</a>
+  </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+    <div class="card p-4"><p class="text-xs uppercase tracking-wider text-ink-subtle">Total Tenders</p>
+      <p class="font-display text-3xl font-bold mt-1">{{ total_tenders }}</p></div>
+    <div class="card p-4"><p class="text-xs uppercase tracking-wider text-ink-subtle">Win Rate</p>
+      <p class="font-display text-3xl font-bold mt-1 text-positive">{{ win_rate }}%</p></div>
+    <div class="card p-4 bg-surface-soft"><p class="text-xs uppercase tracking-wider text-ink-subtle">Pipeline Value</p>
+      <p class="font-display text-2xl font-bold mt-1 font-mono">£{{ total_pipeline|floatformat:0|intcomma }}</p></div>
+    <div class="card p-4"><p class="text-xs uppercase tracking-wider text-ink-subtle">Decided</p>
+      <p class="font-display text-3xl font-bold mt-1">{{ charts.outcome.won|add:charts.outcome.lost }}</p></div>
+  </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+    <div class="card p-4"><p class="text-xs uppercase tracking-wider text-ink-subtle">Total Inquiries</p>
+      <p class="font-display text-3xl font-bold mt-1">{{ total_inquiries }}</p></div>
+    <div class="card p-4"><p class="text-xs uppercase tracking-wider text-ink-subtle">Inquiry Win Rate</p>
+      <p class="font-display text-3xl font-bold mt-1 text-positive">{{ inquiry_win_rate }}%</p></div>
+    <div class="card p-4"><p class="text-xs uppercase tracking-wider text-ink-subtle">Projects Delivered</p>
+      <p class="font-display text-3xl font-bold mt-1">{{ projects_delivered }}</p></div>
+    <div class="card p-4"><p class="text-xs uppercase tracking-wider text-ink-subtle">Services Offered</p>
+      <p class="font-display text-3xl font-bold mt-1">{{ services_offered }}</p></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card p-6">
+      <h2 class="font-display text-lg font-bold mb-4">Status Distribution</h2>
+      <div class="h-64"><canvas id="statusChart"></canvas></div>
+    </div>
+    <div class="card p-6">
+      <h2 class="font-display text-lg font-bold mb-4">Pipeline Value by Sector</h2>
+      <div class="h-64"><canvas id="sectorChart"></canvas></div>
+    </div>
+    <div class="card p-6 lg:col-span-2">
+      <h2 class="font-display text-lg font-bold mb-4">Tenders Created Over Time</h2>
+      <div id="monthlyChart" class="h-72"></div>
+    </div>
+  </div>
+
+  <p class="kicker mt-10 mb-4">Inquiries Pipeline</p>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card p-6">
+      <h2 class="font-display text-lg font-bold mb-4">Inquiry Status Funnel</h2>
+      <div class="h-64"><canvas id="inquiryStatusChart"></canvas></div>
+    </div>
+    <div class="card p-6">
+      <h2 class="font-display text-lg font-bold mb-4">Buyer Type Breakdown</h2>
+      <div class="h-64"><canvas id="buyerTypeChart"></canvas></div>
+    </div>
+    <div class="card p-6 lg:col-span-2">
+      <h2 class="font-display text-lg font-bold mb-4">Inquiries Received Over Time</h2>
+      <div id="inquiryMonthlyChart" class="h-72"></div>
+    </div>
+  </div>
+
+  <p class="kicker mt-10 mb-4">Portfolio &amp; Service Delivery</p>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="card p-6">
+      <h2 class="font-display text-lg font-bold mb-4">Tenders vs Delivered Projects by Sector</h2>
+      <div class="h-64"><canvas id="sectorCompareChart"></canvas></div>
+    </div>
+    <div class="card p-6">
+      <h2 class="font-display text-lg font-bold mb-4">Portfolio Completion Status</h2>
+      <div class="h-64"><canvas id="completionChart"></canvas></div>
+    </div>
+    <div class="card p-6 lg:col-span-2">
+      <h2 class="font-display text-lg font-bold mb-4">Service Demand vs Delivery</h2>
+      <div class="h-72"><canvas id="serviceDemandChart"></canvas></div>
+    </div>
+  </div>
+
+  {{ charts.status|json_script:"chart-status" }}
+  {{ charts.sector|json_script:"chart-sector" }}
+  {{ charts.monthly|json_script:"chart-monthly" }}
+  {{ charts.inquiry_status|json_script:"chart-inquiry-status" }}
+  {{ charts.buyer_type|json_script:"chart-buyer-type" }}
+  {{ charts.inquiry_monthly|json_script:"chart-inquiry-monthly" }}
+  {{ charts.sector_compare|json_script:"chart-sector-compare" }}
+  {{ charts.completion_status|json_script:"chart-completion-status" }}
+  {{ charts.service_demand|json_script:"chart-service-demand" }}
+
+  {% if realtime_enabled %}
+    <div id="notif-config" data-realtime="1" data-token-url="{% url 'tenders:ably_token' %}" hidden></div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chart.umd.min.js' %}" defer></script>
+<script src="{% static 'js/plotly.min.js' %}" defer></script>
+<script src="{% static 'js/dashboard.js' %}" defer></script>
+{% if realtime_enabled %}
+<script src="{% static 'js/ably.min.js' %}" defer></script>
+<script src="{% static 'js/tenders.js' %}" defer></script>
+{% endif %}
+{% endblock %}

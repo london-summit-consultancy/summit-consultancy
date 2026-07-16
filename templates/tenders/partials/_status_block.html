@@ -1,0 +1,47 @@
+{% comment %}Status badge + legal transition buttons + history timeline. Swapped
+via HTMX on status change. Params: tender, transition_options, history_entries.{% endcomment %}
+<div id="status-block">
+  <div class="flex items-center gap-3 flex-wrap">
+    {% include "tenders/partials/_status_badge.html" with status=tender.status label=tender.get_status_display %}
+    {% if tender.status_changed_at %}
+      <span class="text-xs text-ink-subtle">since {{ tender.status_changed_at|date:"d M Y, H:i" }}</span>
+    {% endif %}
+  </div>
+
+  {% if transition_options %}
+    <div class="flex flex-wrap gap-2 mt-4">
+      {% for opt in transition_options %}
+        <button type="button"
+                hx-post="{% url 'tenders:status' tender.public_id %}"
+                hx-vals='{"status": "{{ opt.value }}"}'
+                hx-target="#status-block" hx-swap="outerHTML"
+                class="text-sm px-3 py-1.5 rounded-lg border border-line font-medium hover:border-brand hover:text-brand-strong transition-colors">
+          Mark {{ opt.label }}
+        </button>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="mt-6">
+    <h3 class="text-xs uppercase tracking-wider text-ink-subtle mb-3">Timeline</h3>
+    <ol class="space-y-3">
+      {% for entry in history_entries %}
+        <li class="flex gap-3 text-sm">
+          <span class="mt-1 h-2 w-2 rounded-full bg-brand shrink-0"></span>
+          <div>
+            <p class="text-ink">
+              {% if entry.history_type == '+' %}Created as{% else %}Status{% endif %}
+              <span class="font-medium">{{ entry.get_status_display }}</span>
+            </p>
+            <p class="text-xs text-ink-subtle">
+              {{ entry.history_date|date:"d M Y, H:i" }}
+              {% if entry.history_user %} · {{ entry.history_user.get_full_name }}{% endif %}
+            </p>
+          </div>
+        </li>
+      {% empty %}
+        <li class="text-sm text-ink-subtle">No history yet.</li>
+      {% endfor %}
+    </ol>
+  </div>
+</div>

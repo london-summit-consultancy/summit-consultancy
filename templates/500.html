@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block meta_description %}An unexpected error occurred on the server.{% endblock %}
+{% block canonical %}{% endblock %}
+
+{% block content %}
+<section class="relative isolate overflow-hidden bg-night text-white">
+  <div class="absolute inset-0 -z-10 bg-grid opacity-40"></div>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 min-h-[70vh] flex flex-col items-center justify-center text-center">
+
+    <p class="font-mono text-brand text-xs sm:text-sm tracking-[0.35em] uppercase mb-6">Error &mdash; 500</p>
+
+    <p class="font-mono font-bold leading-none text-white/10 select-none text-[7rem] sm:text-[10rem] lg:text-[13rem] mb-2" aria-hidden="true">500</p>
+
+    <h1 class="font-display text-4xl lg:text-5xl font-bold mb-4">Something went wrong on our end</h1>
+
+    <p class="text-slate-300 text-base sm:text-lg max-w-xl leading-relaxed mb-10">
+      This isn&rsquo;t your fault &mdash; something broke on our side. Our team has been
+      notified and is looking into it. Please try again in a few moments.
+    </p>
+
+    <a href="{% url 'core:home' %}"
+       class="btn border border-brand text-brand hover:bg-brand hover:text-on-brand">
+      Back to Home
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+{% endblock %}

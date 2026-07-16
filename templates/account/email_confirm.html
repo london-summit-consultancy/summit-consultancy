@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load account %}
+
+{% block title %}Confirm your email | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block meta_description %}Confirm your email address for your London Summit Consultancy account.{% endblock %}
+{% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="bg-surface min-h-[70vh] flex items-center justify-center px-4 py-16">
+  <div class="w-full max-w-md">
+
+    {% if confirmation %}
+      {% user_display confirmation.email_address.user as user_display %}
+      {% if can_confirm %}
+        <div class="text-center mb-8">
+          <span class="kicker justify-center">Account · Confirm</span>
+          <h1 class="text-3xl font-semibold text-ink mt-4">Confirm your email</h1>
+          <p class="text-ink-muted text-sm mt-2">You're one click from activating your account.</p>
+        </div>
+
+        <div class="card p-7 lg:p-8 text-center">
+          <span class="inline-flex h-14 w-14 items-center justify-center rounded-full neu-sm text-brand-strong mx-auto mb-5" aria-hidden="true">
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
+
+          <p class="text-sm text-ink-muted leading-relaxed">
+            Confirm that
+            <span class="font-semibold text-ink">{{ confirmation.email_address.email }}</span>
+            belongs to <span class="font-semibold text-ink">{{ user_display }}</span>.
+          </p>
+
+          <form method="post" action="{% url 'account_confirm_email' confirmation.key %}" class="mt-6">
+            {% csrf_token %}
+            {{ redirect_field }}
+            <button type="submit" class="btn btn-primary w-full !py-3">Confirm my email</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="text-center mb-8">
+          <span class="kicker justify-center">Account · Confirm</span>
+          <h1 class="text-3xl font-semibold text-ink mt-4">Already confirmed</h1>
+        </div>
+
+        <div class="card p-7 lg:p-8 text-center">
+          <span class="inline-flex h-14 w-14 items-center justify-center rounded-full neu-sm text-danger mx-auto mb-5" aria-hidden="true">
+            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+              <circle cx="12" cy="12" r="9"/>
+              <path stroke-linecap="round" d="M12 8v5m0 3h.01"/>
+            </svg>
+          </span>
+          <p class="text-sm text-ink-muted leading-relaxed">
+            We can't confirm
+            <span class="font-semibold text-ink">{{ confirmation.email_address.email }}</span>
+            because it's already confirmed by a different account.
+          </p>
+          <a href="{% url 'account_login' %}" class="btn btn-primary w-full !py-3 mt-6">Back to sign in</a>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="text-center mb-8">
+        <span class="kicker justify-center">Account · Confirm</span>
+        <h1 class="text-3xl font-semibold text-ink mt-4">Link expired</h1>
+        <p class="text-ink-muted text-sm mt-2">This confirmation link is no longer valid.</p>
+      </div>
+
+      <div class="card p-7 lg:p-8 text-center">
+        <span class="inline-flex h-14 w-14 items-center justify-center rounded-full neu-sm text-ink-muted mx-auto mb-5" aria-hidden="true">
+          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+            <circle cx="12" cy="12" r="9"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/>
+          </svg>
+        </span>
+        <p class="text-sm text-ink-muted leading-relaxed">
+          This email confirmation link has expired or is invalid. Sign in to request a fresh
+          confirmation link.
+        </p>
+        <a href="{% url 'account_login' %}" class="btn btn-primary w-full !py-3 mt-6">Back to sign in</a>
+      </div>
+    {% endif %}
+
+    <p class="text-center text-sm text-ink-muted mt-6">
+      Need a hand? <a href="{% url 'inquiries:contact' %}" class="text-brand-strong link-underline font-medium">Contact us</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

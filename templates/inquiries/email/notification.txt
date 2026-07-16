@@ -1,0 +1,16 @@
+New enquiry received — London Summit Consultancy
+
+Name:    {{ inquiry.full_name }}
+Email:   {{ inquiry.email }}
+Phone:   {{ inquiry.phone|default:"—" }}
+Company: {{ inquiry.company|default:"—" }}
+Type:    {{ inquiry.get_buyer_type_display|default:"—" }}
+Service: {{ inquiry.service.name|default:"—" }}
+Budget:  {{ inquiry.budget_range|default:"—" }}
+
+Project Description:
+{{ inquiry.project_desc }}
+
+---
+Source:  {{ inquiry.source_page|default:"Direct" }}
+Received: {{ inquiry.created_at }}

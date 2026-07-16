@@ -1,0 +1,140 @@
+<form method="post"
+      action="{% url 'inquiries:contact' %}"
+      hx-post="{% url 'inquiries:contact' %}"
+      hx-target="#contact-form"
+      hx-swap="outerHTML"
+      hx-indicator="#form-spinner"
+      class="space-y-5">
+  {% csrf_token %}
+
+  {{ form.website }}
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div>
+      <label for="{{ form.full_name.id_for_label }}" class="field-label">
+        {{ form.full_name.label }} <span class="text-danger">*</span>
+      </label>
+      <input type="text"
+             name="{{ form.full_name.html_name }}"
+             id="{{ form.full_name.id_for_label }}"
+             value="{{ form.full_name.value|default:'' }}"
+             placeholder="Your full name"
+             hx-post="{% url 'inquiries:validate' %}"
+             hx-trigger="blur"
+             hx-target="next .field-error"
+             hx-swap="innerHTML"
+             hx-include="[name='full_name']"
+             class="field-input {% if form.full_name.errors %}has-error{% endif %}">
+      <span class="field-error text-danger text-xs mt-1 block">{% if form.full_name.errors %}{{ form.full_name.errors.0 }}{% endif %}</span>
+    </div>
+
+    <div>
+      <label for="{{ form.email.id_for_label }}" class="field-label">
+        {{ form.email.label }} <span class="text-danger">*</span>
+      </label>
+      <input type="email"
+             name="{{ form.email.html_name }}"
+             id="{{ form.email.id_for_label }}"
+             value="{{ form.email.value|default:'' }}"
+             placeholder="your@email.com"
+             hx-post="{% url 'inquiries:validate' %}"
+             hx-trigger="blur"
+             hx-target="next .field-error"
+             hx-swap="innerHTML"
+             hx-include="[name='email']"
+             class="field-input {% if form.email.errors %}has-error{% endif %}">
+      <span class="field-error text-danger text-xs mt-1 block">{% if form.email.errors %}{{ form.email.errors.0 }}{% endif %}</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div>
+      <label for="{{ form.phone.id_for_label }}" class="field-label">{{ form.phone.label }}</label>
+      <input type="text"
+             name="{{ form.phone.html_name }}"
+             id="{{ form.phone.id_for_label }}"
+             value="{{ form.phone.value|default:'' }}"
+             placeholder="+44 7700 000000"
+             class="field-input">
+      <span class="field-error text-danger text-xs mt-1 block">{% if form.phone.errors %}{{ form.phone.errors.0 }}{% endif %}</span>
+    </div>
+
+    <div>
+      <label for="{{ form.company.id_for_label }}" class="field-label">{{ form.company.label }}</label>
+      <input type="text"
+             name="{{ form.company.html_name }}"
+             id="{{ form.company.id_for_label }}"
+             value="{{ form.company.value|default:'' }}"
+             placeholder="Company or organisation"
+             class="field-input">
+      <span class="field-error text-danger text-xs mt-1 block">{% if form.company.errors %}{{ form.company.errors.0 }}{% endif %}</span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div>
+      <label for="{{ form.buyer_type.id_for_label }}" class="field-label">{{ form.buyer_type.label }}</label>
+      <select name="{{ form.buyer_type.html_name }}"
+              id="{{ form.buyer_type.id_for_label }}"
+              class="field-input">
+        <option value="">— Select —</option>
+        {% for val, label in form.fields.buyer_type.choices %}
+        {% if val %}<option value="{{ val }}" {% if form.buyer_type.value == val %}selected{% endif %}>{{ label }}</option>{% endif %}
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label for="{{ form.service.id_for_label }}" class="field-label">Service of interest</label>
+      <select name="{{ form.service.html_name }}"
+              id="{{ form.service.id_for_label }}"
+              class="field-input">
+        <option value="">— Select a service —</option>
+        {% for service in services %}
+        <option value="{{ service.pk }}" {% if form.service.value == service.pk|stringformat:"s" %}selected{% endif %}>{{ service.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <label for="{{ form.project_desc.id_for_label }}" class="field-label">
+      {{ form.project_desc.label }} <span class="text-danger">*</span>
+    </label>
+    <textarea name="{{ form.project_desc.html_name }}"
+              id="{{ form.project_desc.id_for_label }}"
+              rows="5"
+              placeholder="Tell us about your project…"
+              hx-post="{% url 'inquiries:validate' %}"
+              hx-trigger="blur"
+              hx-target="next .field-error"
+              hx-swap="innerHTML"
+              hx-include="[name='project_desc']"
+              class="field-input {% if form.project_desc.errors %}has-error{% endif %}">{{ form.project_desc.value|default:'' }}</textarea>
+    <span class="field-error text-danger text-xs mt-1 block">{% if form.project_desc.errors %}{{ form.project_desc.errors.0 }}{% endif %}</span>
+  </div>
+
+  <div>
+    <label for="{{ form.budget_range.id_for_label }}" class="field-label">{{ form.budget_range.label }}</label>
+    <input type="text"
+           name="{{ form.budget_range.html_name }}"
+           id="{{ form.budget_range.id_for_label }}"
+           value="{{ form.budget_range.value|default:'' }}"
+           placeholder="e.g. £50k–£100k"
+           class="field-input">
+  </div>
+
+  <div class="flex items-center gap-4 pt-2">
+    <button type="submit" class="btn btn-primary">
+      Send Message
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"/></svg>
+    </button>
+    <span id="form-spinner" class="htmx-indicator text-ink-muted text-sm">Sending…</span>
+  </div>
+
+  {% if form.non_field_errors %}
+  <div class="text-danger text-sm p-3 rounded-lg" style="background-color: var(--color-danger-soft);">
+    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+  </div>
+  {% endif %}
+</form>

@@ -1,0 +1,16 @@
+Dear {{ inquiry.full_name }},
+
+Thank you for getting in touch with London Summit Consultancy.
+
+We have received your enquiry and a member of our team will be in contact within one business day.
+
+Your enquiry summary:
+
+  Service:  {{ inquiry.service.name|default:"General enquiry" }}
+  Project:  {{ inquiry.project_desc|truncatewords:30 }}
+
+If you have any urgent questions in the meantime, please don't hesitate to contact us directly.
+
+Kind regards,
+London Summit Consultancy Limited
+London, UK

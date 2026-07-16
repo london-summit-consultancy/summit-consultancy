@@ -1,0 +1,9 @@
+{% comment %}Colour-coded status pill. Params: status (value), label (display).{% endcomment %}
+<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap
+{% if status == 'draft' %}bg-line text-ink-muted
+{% elif status == 'submitted' %}bg-brand-soft text-brand-strong
+{% elif status == 'won' %}bg-positive-soft text-positive
+{% elif status == 'lost' %}bg-danger-soft text-danger
+{% else %}bg-surface-sunken text-ink-subtle{% endif %}">
+  {{ label }}
+</span>

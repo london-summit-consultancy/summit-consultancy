@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Verify your email | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block meta_description %}Confirm your email address to finish setting up your London Summit Consultancy account.{% endblock %}
+{% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="bg-surface min-h-[70vh] flex items-center justify-center px-4 py-16">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <span class="kicker justify-center">Account · Verify</span>
+      <h1 class="text-3xl font-semibold text-ink mt-4">Check your inbox</h1>
+      <p class="text-ink-muted text-sm mt-2">One more step to activate your account.</p>
+    </div>
+
+    <div class="card p-7 lg:p-8 text-center">
+      <span class="inline-flex h-14 w-14 items-center justify-center rounded-full neu-sm text-brand-strong mx-auto mb-5" aria-hidden="true">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 7l8.5 6 8.5-6"/>
+        </svg>
+      </span>
+
+      <p class="font-medium text-ink">We've sent you a verification link.</p>
+      <p class="text-sm text-ink-muted mt-2 leading-relaxed">
+        Follow the link in that email to finish setting up your account. It can take a minute
+        to arrive — if you don't see it, check your spam or junk folder.
+      </p>
+
+      <div class="mt-6 rounded-lg neu-inset px-4 py-3 text-xs text-ink-muted leading-relaxed text-left">
+        Didn't get it? Double-check the address you entered, then sign in again to have a fresh
+        confirmation link sent to you.
+      </div>
+
+      <a href="{% url 'account_login' %}" class="btn btn-primary w-full !py-3 mt-6">Back to sign in</a>
+    </div>
+
+    <p class="text-center text-sm text-ink-muted mt-6">
+      Need a hand? <a href="{% url 'inquiries:contact' %}" class="text-brand-strong link-underline font-medium">Contact us</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

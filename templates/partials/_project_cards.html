@@ -1,0 +1,34 @@
+{% if projects %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-reveal-group="120">
+  {% for project in projects %}
+  <a href="{{ project.get_absolute_url }}" class="card card-interactive group block overflow-hidden" data-reveal>
+    <div class="aspect-[16/10] overflow-hidden relative">
+      {% if project.cover_image %}
+      <img src="{{ project.cover_image.url }}" alt="{{ project.title }}"
+           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+           loading="lazy" width="600" height="375">
+      {% else %}
+      <div class="w-full h-full neu-inset flex items-center justify-center">
+        <span class="text-ink-subtle text-xs uppercase tracking-wide">No image</span>
+      </div>
+      {% endif %}
+      <span class="absolute top-3 left-3 bg-surface/90 text-ink text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded">
+        {{ project.get_completion_status_display }}
+      </span>
+    </div>
+    <div class="p-6">
+      <p class="text-brand-strong text-[10px] font-mono uppercase tracking-widest mb-2">
+        {{ project.get_sector_display }}{% if project.location %} · {{ project.location }}{% endif %} · {{ project.year }}
+      </p>
+      <h3 class="font-bold text-ink mb-2 leading-snug group-hover:text-brand-strong transition-colors text-base">{{ project.title }}</h3>
+      <p class="text-ink-muted text-sm line-clamp-2 leading-relaxed">{{ project.summary }}</p>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="py-16 text-center">
+  <p class="text-ink-muted text-lg">No projects found for the selected filter.</p>
+  <a href="{% url 'portfolio:list' %}" class="mt-4 inline-block link-underline text-brand-strong font-medium">View all projects</a>
+</div>
+{% endif %}

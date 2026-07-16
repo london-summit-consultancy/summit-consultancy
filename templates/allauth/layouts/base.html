@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% comment %}
+  Override of allauth's own layout so every account page (password reset, email
+  confirmation, verification-sent, logout, …) renders inside the site's base
+  template — nav, footer, theme and CSP nonce included — instead of allauth's
+  bare fallback. The login/signup templates extend site base.html directly for a
+  fuller treatment; everything else inherits this shell plus the restyled
+  field/button elements. Page content flows into base.html's `content` block.
+{% endcomment %}
+
+{% block title %}{% block head_title %}{% endblock head_title %} | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}

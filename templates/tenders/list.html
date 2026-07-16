@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}Tender Pipeline | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+    <div>
+      <span class="kicker">Internal</span>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold mt-2">Tender Pipeline</h1>
+    </div>
+    <div class="flex gap-3">
+      <a href="{% url 'tenders:dashboard' %}" class="btn btn-dark">Analytics</a>
+      <a href="{% url 'tenders:create' %}" class="btn btn-primary">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+        New Tender
+      </a>
+    </div>
+  </div>
+
+  {% if realtime_enabled %}
+    <div id="notif-config" data-realtime="1" data-token-url="{% url 'tenders:ably_token' %}" hidden></div>
+  {% endif %}
+
+  {# Stat strip #}
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
+    <div class="card p-4">
+      <p class="text-xs uppercase tracking-wider text-ink-subtle">Draft</p>
+      <p class="font-display text-2xl font-bold mt-1">{{ status_counts.draft }}</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs uppercase tracking-wider text-ink-subtle">Submitted</p>
+      <p class="font-display text-2xl font-bold mt-1 text-brand-strong">{{ status_counts.submitted }}</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs uppercase tracking-wider text-ink-subtle">Won</p>
+      <p class="font-display text-2xl font-bold mt-1 text-positive">{{ status_counts.won }}</p>
+    </div>
+    <div class="card p-4">
+      <p class="text-xs uppercase tracking-wider text-ink-subtle">Lost</p>
+      <p class="font-display text-2xl font-bold mt-1 text-danger">{{ status_counts.lost }}</p>
+    </div>
+    <div class="card p-4 bg-surface-soft col-span-2 lg:col-span-1">
+      <p class="text-xs uppercase tracking-wider text-ink-subtle">Pipeline Value</p>
+      <p class="font-display text-2xl font-bold mt-1 font-mono">£{{ pipeline_value|floatformat:0|intcomma }}</p>
+    </div>
+  </div>
+
+  {# Filter bar #}
+  <div class="flex flex-wrap gap-2 mb-6" role="group" aria-label="Filter by status">
+    <a href="{% url 'tenders:list' %}"
+       hx-get="{% url 'tenders:list' %}" hx-target="#tender-list" hx-swap="innerHTML" hx-push-url="true"
+       class="px-3 py-1.5 rounded-full text-sm font-medium border {% if not active_status %}bg-ink text-surface border-ink{% else %}border-line text-ink-muted hover:border-brand{% endif %}">
+      All
+    </a>
+    {% for value, label in status_choices %}
+      <a href="{% url 'tenders:list' %}?status={{ value }}"
+         hx-get="{% url 'tenders:list' %}?status={{ value }}" hx-target="#tender-list" hx-swap="innerHTML" hx-push-url="true"
+         class="px-3 py-1.5 rounded-full text-sm font-medium border {% if active_status == value %}bg-ink text-surface border-ink{% else %}border-line text-ink-muted hover:border-brand{% endif %}">
+        {{ label }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <div id="tender-list">
+    {% include "tenders/partials/_tender_list.html" %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if realtime_enabled %}
+<script src="{% static 'js/ably.min.js' %}" defer></script>
+<script src="{% static 'js/tenders.js' %}" defer></script>
+{% endif %}
+{% endblock %}

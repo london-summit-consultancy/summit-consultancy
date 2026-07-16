@@ -1,0 +1,1548 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Self-hosted fonts (no external CDN — required for a strict CSP).
+   Variable woff2 files live in static/fonts/; paths are relative to the built
+   main.css at static/css/. `swap` shows fallback text immediately, no FOIT.
+   ========================================================================== */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/inter.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("../fonts/playfair-display.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/jetbrains-mono.woff2") format("woff2");
+}
+
+/* ==========================================================================
+   Pioneer Consultants — Neumorphic Design System (Tailwind v4, CSS-first)
+
+   A single low-contrast surface carries the whole UI; depth is created ONLY by
+   dual-directional shadows (light top-left, dark bottom-right) — never by
+   different background colors. Page, header, footer, cards, buttons and inputs
+   all share `--color-surface`. Text/icon colors convey meaning. Dark mode is
+   driven by [data-theme="dark"] on <html>; semantic tokens are referenced by
+   Tailwind utilities as var(--color-*) and re-theme automatically.
+   ========================================================================== */
+
+/* Make `dark:` utilities respond to the data-theme attribute, not the media
+   query — the ThemeManager always resolves system → a concrete attribute. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* Typography — gorgeous Dribbble-level pairing of editorial serif with high-performance sans-serif */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Brand — Pioneer Emerald Green. A highly professional, rich corporate shade. */
+  --color-brand: #0e6e47; 
+  --color-brand-strong: #0e6e47; 
+  --color-brand-hover: #0a4f32; 
+  --color-brand-soft: #f0fdf4; 
+  --color-on-brand: #ffffff; 
+
+  /* Secondary — refined, elegant steel blue. */
+  --color-secondary: #0284c7;
+
+  /* Semantic surfaces — high-contrast crisp layers instead of low-contrast neumorphism */
+  --color-surface: #f8fafc; /* super clean crisp background canvas */
+  --color-surface-sunken: #f1f5f9; /* sleek grey backgrounds */
+  --color-surface-raised: #ffffff; /* pure white cards and elements */
+  --color-surface-soft: #f8fafc;
+
+  /* Luxury deep background tokens */
+  --color-night: #090b11;
+  --color-night-2: #111420;
+
+  /* Text — deep ink headings, legible slate body */
+  --color-ink: #0f172a; /* slate-900 heading */
+  --color-ink-muted: #334155; /* slate-700 body */
+  --color-ink-subtle: #64748b; /* slate-500 captions / metadata */
+
+  /* Borders — ultra-fine modern edge definition */
+  --color-line: #e2e8f0; /* slate-200 rule */
+  --color-line-strong: #cbd5e1; /* slate-300 rule */
+
+  /* Feedback colors */
+  --color-positive: #10b981;
+  --color-positive-soft: #ecfdf5;
+  --color-danger: #ef4444;
+  --color-danger-soft: #fef2f2;
+
+  /* Drop shadows mapped to modern soft luxury shadows for backward compatibility with neumorphic classes */
+  --neu-2xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --neu-xs: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --neu-sm: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+  --neu-md: 0 10px 15px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+  --neu-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --neu-xl: 0 25px 50px -12px rgba(15, 23, 42, 0.12);
+  --neu-2xl: 0 35px 60px -15px rgba(15, 23, 42, 0.15);
+  --neu-inset: inset 0 2px 4px 0 rgba(15, 23, 42, 0.05);
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Custom keyframe-backed animations (Tailwind v4 `animate-*`) */
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.8s var(--ease-out-expo) both;
+  --animate-neu-breathe: neu-breathe 7s ease-in-out infinite;
+  --animate-neu-breathe-slow: neu-breathe 9s ease-in-out infinite;
+  --animate-neu-float: neu-float 5.5s ease-in-out infinite;
+  --animate-neu-float-soft: neu-float-soft 4.5s ease-in-out infinite;
+  --animate-neu-spin: neu-spin 26s linear infinite;
+}
+
+/* Dark theme overrides — rich, luxury deep black (#07090e) canvas and slate-raised card layers */
+[data-theme="dark"] {
+  --color-brand: #10b981; 
+  --color-brand-strong: #10b981;
+  --color-brand-hover: #059669;
+  --color-brand-soft: #064e3b;
+  --color-on-brand: #022c22;
+
+  --color-secondary: #0284c7;
+
+  --color-surface: #07090e; /* ultra deep pitch-black */
+  --color-surface-sunken: #030406;
+  --color-surface-raised: #0f121d; /* slate-obsidian raised layers */
+  --color-surface-soft: #141825;
+
+  --color-night: #030406;
+  --color-night-2: #07090d;
+
+  --color-ink: #f8fafc; /* slate-50 heading */
+  --color-ink-muted: #cbd5e1; /* slate-300 body */
+  --color-ink-subtle: #64748b; /* slate-500 captions */
+
+  --color-line: #1e293b; /* slate-800 borders */
+  --color-line-strong: #334155; /* slate-700 borders */
+
+  --color-positive: #10b981;
+  --color-positive-soft: #064e3b;
+  --color-danger: #f87171;
+  --color-danger-soft: #450a0a;
+
+  /* Dark luxury smooth shadows */
+  --neu-2xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --neu-xs: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --neu-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --neu-md: 0 10px 15px -3px rgba(0, 0, 0, 0.45);
+  --neu-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  --neu-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  --neu-2xl: 0 35px 60px -15px rgba(0, 0, 0, 0.7);
+  --neu-inset: inset 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Neumorphic elevation utilities mapped to premium soft shadows */
+@utility neu-2xs { box-shadow: var(--neu-2xs); }
+@utility neu-xs { box-shadow: var(--neu-xs); }
+@utility neu-sm { box-shadow: var(--neu-sm); }
+@utility neu-md { box-shadow: var(--neu-md); }
+@utility neu-lg { box-shadow: var(--neu-lg); }
+@utility neu-xl { box-shadow: var(--neu-xl); }
+@utility neu-2xl { box-shadow: var(--neu-2xl); }
+@utility neu-inset { box-shadow: var(--neu-inset); }
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 600; /* semibold headings (neumorphic type scale) */
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+
+  /* Accessible focus ring across the UI */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Components
+   -------------------------------------------------------------------------- */
+@layer components {
+  /* Buttons (pure neumorphism) ------------------------------------------
+     Every button shares the surface color; variants differ ONLY by text
+     color. Raised by default (shadow-sm), lifts on hover (shadow-md), and
+     presses in when active (shadow-inset). */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    border-radius: 0.5rem; /* 8px */
+    padding: 0.8rem 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    background-color: var(--color-surface-raised);
+    color: var(--color-ink);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--neu-2xs);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn:hover {
+    box-shadow: var(--neu-xs);
+    border-color: var(--color-line-strong);
+    transform: translateY(-1px);
+    color: var(--color-ink);
+  }
+  .btn:active {
+    box-shadow: none;
+    transform: translateY(0);
+  }
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    color: var(--color-ink-subtle);
+    background-color: var(--color-surface-sunken);
+    border-color: var(--color-line);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+  }
+  /* Primary — rich solid brand color background with white text */
+  .btn-primary {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand) !important;
+    border-color: var(--color-brand);
+    box-shadow: 0 4px 10px rgba(14, 110, 71, 0.15);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-brand-hover);
+    border-color: var(--color-brand-hover);
+    box-shadow: 0 6px 14px rgba(14, 110, 71, 0.25);
+    color: var(--color-on-brand) !important;
+  }
+  /* Secondary / neutral — solid deep dark text/background */
+  .btn-dark {
+    background-color: var(--color-ink);
+    color: var(--color-surface-raised) !important;
+    border-color: var(--color-ink);
+  }
+  .btn-dark:hover {
+    background-color: var(--color-ink-muted);
+    border-color: var(--color-ink-muted);
+    color: var(--color-surface-raised) !important;
+  }
+  /* Ghost / flat — no resting shadow; raises softly on hover */
+  .btn-ghost {
+    color: var(--color-ink-muted);
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .btn-ghost:hover {
+    background-color: var(--color-surface-sunken);
+    border-color: var(--color-line);
+    box-shadow: var(--neu-2xs);
+    color: var(--color-ink);
+  }
+
+  /* Surface card — elegant white background with thin border and very soft shadow */
+  .card {
+    position: relative;
+    background-color: var(--color-surface-raised);
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem; /* 12px for modern look */
+    box-shadow: var(--neu-xs);
+    transition:
+      transform 0.4s var(--ease-out-expo),
+      border-color 0.4s var(--ease-out-expo),
+      box-shadow 0.4s var(--ease-out-expo);
+  }
+  /* Interactive card — lifts elegantly on hover */
+  .card-interactive {
+    cursor: pointer;
+  }
+  .card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--neu-md);
+    border-color: var(--color-line-strong);
+  }
+  .card-interactive:active {
+    transform: translateY(-1px);
+    box-shadow: var(--neu-sm);
+  }
+
+  /* Eyebrow / kicker label — an all-caps micro-label with a brand dot ----- */
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-brand-strong);
+  }
+  .kicker::before {
+    content: "";
+    width: 0.45rem;
+    height: 0.45rem;
+    flex: none;
+    border-radius: 9999px;
+    background-color: var(--color-brand);
+  }
+
+  /* Premium icon tile — a crisp, soft-shadowed circle holding a brand-colored icon */
+  .neu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    background-color: var(--color-surface-raised);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--neu-2xs);
+    color: var(--color-brand-strong);
+    flex: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  a.neu-icon:hover,
+  button.neu-icon:hover {
+    box-shadow: var(--neu-xs);
+    border-color: var(--color-line-strong);
+    transform: translateY(-1px);
+  }
+  /* Inset variant — flat background with deep tint */
+  .neu-icon-inset {
+    box-shadow: none;
+    background-color: var(--color-brand-soft);
+    border-color: transparent;
+  }
+
+  /* Filter chip — highly polished segmented control pills */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--color-ink-muted);
+    background-color: var(--color-surface-raised);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--neu-2xs);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+  }
+  .chip:hover {
+    box-shadow: var(--neu-xs);
+    border-color: var(--color-line-strong);
+    color: var(--color-ink);
+    transform: translateY(-1px);
+  }
+  .chip.is-active {
+    color: var(--color-on-brand) !important;
+    background-color: var(--color-brand);
+    border-color: var(--color-brand);
+    box-shadow: 0 4px 10px rgba(14, 110, 71, 0.2);
+    transform: none;
+  }
+
+  /* Section index — refined status and position badge */
+  .neu-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--color-brand-soft);
+    border: 1px solid rgba(14, 110, 71, 0.12);
+    color: var(--color-brand-strong);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    font-size: 0.9rem;
+  }
+
+  /* Animated underline link --------------------------------------------- */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1.5px;
+    width: 100%;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease-out-expo);
+  }
+  .link-underline:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Theme toggle — highly polished premium pill track */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 9999px;
+    background-color: var(--color-surface-sunken);
+    border: 1px solid var(--color-line);
+  }
+  .theme-toggle-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9999px;
+    color: var(--color-ink-subtle);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .theme-toggle-option:hover {
+    color: var(--color-ink);
+  }
+  .theme-toggle-option[aria-checked="true"] {
+    color: var(--color-brand-strong);
+    background-color: var(--color-surface-raised);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--neu-2xs);
+  }
+
+  /* Form fields — clean crisp inputs with modern focus rings */
+  .field-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+  }
+  .field-input {
+    width: 100%;
+    border-radius: 0.5rem; /* 8px */
+    border: 1px solid var(--color-line);
+    background-color: var(--color-surface-raised);
+    color: var(--color-ink);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.875rem;
+    box-shadow: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .field-input::placeholder {
+    color: var(--color-ink-subtle);
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgba(14, 110, 71, 0.15);
+  }
+  .field-input.has-error {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+  }
+
+  /* Rich text (replaces typography plugin) ------------------------------ */
+  .rich-text {
+    color: var(--color-ink-muted);
+    line-height: 1.75;
+  }
+  .rich-text > * + * {
+    margin-top: 1.25rem;
+  }
+  .rich-text h2 {
+    color: var(--color-ink);
+    font-size: 1.6rem;
+    margin-top: 2.5rem;
+  }
+  .rich-text h3 {
+    color: var(--color-ink);
+    font-size: 1.25rem;
+    margin-top: 2rem;
+  }
+  .rich-text a {
+    color: var(--color-brand-strong);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .rich-text ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  .rich-text li + li {
+    margin-top: 0.5rem;
+  }
+  .rich-text .lead {
+    font-size: 1.25rem;
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll-reveal & motion utilities
+   Hidden state only applies when JS is on (html.js) AND motion is allowed,
+   so no-JS / reduced-motion users always see content.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.95s var(--ease-out-expo),
+      transform 0.95s var(--ease-out-expo),
+      filter 0.95s var(--ease-out-expo),
+      clip-path 1.25s var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform, filter, clip-path;
+  }
+  html.js [data-reveal="left"] {
+    transform: translateX(-32px);
+  }
+  html.js [data-reveal="right"] {
+    transform: translateX(32px);
+  }
+  html.js [data-reveal="scale"] {
+    transform: scale(0.94);
+  }
+  /* Focus-pull: text sharpens into view (emphasis beat) */
+  html.js [data-reveal="blur"] {
+    transform: translateY(16px);
+    filter: blur(14px);
+  }
+  /* Curtain wipe: image is unveiled top-to-bottom (the "reveal" beat) */
+  html.js [data-reveal="clip"] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 100% 0);
+  }
+  html.js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  /* clip-path resolves ONLY for the curtain-wipe variant. Applying it to every
+     revealed element clips absolutely-positioned children that overflow their
+     box (e.g. the hero medallion's top/bottom badges), so it's scoped here. */
+  html.js [data-reveal="clip"].is-visible {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hero medallion — a gentle "breathe" (scale) for the extruded rings, a soft
+   vertical float for the centre disc, and a slow orbit for the dashed guide.
+   Amplitudes are deliberately small so the shadow light-source stays believable. */
+@keyframes neu-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+@keyframes neu-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+@keyframes neu-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes neu-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* All hero motion is opt-in on motion preference — static, fully legible otherwise. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-neu-breathe,
+  .animate-neu-breathe-slow,
+  .animate-neu-float,
+  .animate-neu-float-soft,
+  .animate-neu-spin {
+    animation: none !important;
+  }
+}
+
+/* Blueprint grid — setting-out lines for dark zones (hero/footer/sectors).
+   Cell size is shared with .bp-field (light zones) so the drafting grid reads
+   as ONE continuous sheet as light and dark sections meet down the page. */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(217, 228, 241, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(217, 228, 241, 0.08) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* ==========================================================================
+   Blueprint signature utilities — the drawing-sheet vocabulary applied
+   site-wide: faint grid fields, setting-out annotations, datum rules, and
+   section index marks. Token-aware, so they read in both paper & navy themes.
+   ========================================================================== */
+
+/* Section grid field — a faint drafting grid tinted by the current ink */
+.bp-field {
+  position: relative;
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-ink) 5.5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 5.5%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+[data-theme="dark"] .bp-field {
+  background-image:
+    linear-gradient(to right, rgba(217, 228, 241, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(217, 228, 241, 0.045) 1px, transparent 1px);
+}
+
+/* Mono annotation label (coordinates, datum, drawing refs) */
+.bp-annotate {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-subtle);
+}
+
+/* Big drawing index number for section headers (01 / 02 …) */
+.bp-index {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--color-brand-strong);
+}
+
+/* Hairline datum rule with an end tick */
+.bp-rule {
+  position: relative;
+  height: 1px;
+  width: 100%;
+  background-color: var(--color-line);
+}
+.bp-rule::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background-color: var(--color-brand);
+}
+
+/* Corner-tick frame — brackets any block like a detail callout */
+.bp-frame {
+  position: relative;
+}
+.bp-frame::before,
+.bp-frame::after {
+  content: "";
+  position: absolute;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-color: var(--color-brand);
+  pointer-events: none;
+}
+.bp-frame::before {
+  top: 0;
+  left: 0;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+.bp-frame::after {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+/* Hero accent — static braced-bay blueprint detail (partials/_hero_motif.html),
+   placed on always-dark page heroes for parity with the homepage frame. Light
+   strokes are fixed (heroes are always navy in both themes). */
+.hero-motif {
+  position: absolute;
+  top: 50%;
+  right: clamp(1rem, 4vw, 3.5rem);
+  transform: translateY(-50%);
+  width: clamp(120px, 13vw, 185px);
+  z-index: 0;
+  pointer-events: none;
+}
+.hero-motif svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.hero-motif .hm-main {
+  stroke: #d9e4f1;
+  stroke-width: 1.5;
+  opacity: 0.42;
+}
+.hero-motif .hm-brace {
+  stroke: #8fa0b6;
+  stroke-width: 0.9;
+  opacity: 0.38;
+}
+.hero-motif .hm-hatch,
+.hero-motif .hm-dim {
+  stroke: #8fa0b6;
+  stroke-width: 0.8;
+  opacity: 0.42;
+}
+.hero-motif .hm-node {
+  fill: var(--color-brand);
+  opacity: 0.9;
+}
+@media (max-width: 900px) {
+  .hero-motif {
+    display: none;
+  }
+}
+
+/* HTMX request indicator */
+.htmx-indicator {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Experience — the London Summit journey (homepage) + ambient motif.
+   Two rendering modes share one markup:
+   - Fallback (no JS / no WebGL2 / reduced motion): chapters render as an
+     elegant stacked narrative on the site theme; chapter 1 is the hero.
+   - Engine on (html[data-experience-on]): a 1000vh track pins a 100vh stage;
+     the canvas lives behind absolutely-stacked chapter copy whose opacity is
+     scrubbed by scroll. Copy colours switch to literals keyed to the canvas
+     palette (white void → night), not the site theme.
+   -------------------------------------------------------------------------- */
+@layer components {
+  /* ---- Shared chapter typography (fallback values = theme tokens) ------- */
+  .experience-chapter {
+    position: relative;
+    padding-block: 5.5rem;
+  }
+  .experience-chapter + .experience-chapter {
+    border-top: 1px solid var(--color-line);
+  }
+  .exp-copy {
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+    text-align: center;
+  }
+  .exp-kicker {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--exp-kicker, var(--color-brand-strong));
+  }
+  .exp-headline {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 5.5vw, 4.25rem);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--exp-ink, var(--color-ink));
+    margin-block: 1.1rem 1.25rem;
+  }
+  .exp-lede {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--exp-muted, var(--color-ink-muted));
+  }
+  .exp-lede .exp-link {
+    color: var(--exp-ink, var(--color-ink));
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .exp-quote footer {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    opacity: 0.75;
+  }
+  .exp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2.25rem;
+  }
+  /* Ghost button must read on the white void, not assume a dark hero */
+  .experience-chapter .btn-ghost {
+    border-color: color-mix(in oklab, var(--exp-ink, var(--color-ink)) 40%, transparent);
+    color: var(--exp-ink, var(--color-ink));
+  }
+  .experience-chapter .btn-ghost:hover {
+    background-color: var(--exp-ink, var(--color-ink));
+    color: var(--color-surface);
+  }
+
+  /* Canvas + cue exist only for the engine */
+  #experience-canvas,
+  .experience-cue {
+    display: none;
+  }
+
+
+  /* ---- Journey mode ------------------------------------------------------ */
+  html[data-experience-on] .experience-track {
+    height: 1000vh;
+  }
+  html[data-experience-on] .experience-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+  html[data-experience-on] #experience-canvas {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  html[data-experience-on] #experience-canvas canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  html[data-experience-on] .experience-chapter {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 0 1.5rem;
+    border: 0;
+    z-index: 1;
+    pointer-events: none;
+    /* Literal palette — the canvas, not the theme, is the background now.
+       All seven chapters live in the same white-gallery daylight. */
+    --exp-ink: #1f2937;
+    --exp-muted: #475569;
+    --exp-kicker: #b45309;
+    --exp-veil: rgba(252, 252, 251, 0.75);
+  }
+  html[data-experience-on] .exp-copy {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: auto;
+    will-change: opacity, transform;
+    padding: 2.25rem 2.5rem;
+    border-radius: 1.5rem;
+    /* Soft veil (no backdrop-filter — it would force full-canvas repaints) */
+    background: radial-gradient(ellipse at center, var(--exp-veil) 0%, transparent 72%);
+  }
+  @media (min-width: 1024px) {
+    html[data-experience-on] .experience-chapter--start {
+      place-items: center start;
+      padding-inline-start: 8vw;
+    }
+    html[data-experience-on] .experience-chapter--end {
+      place-items: center end;
+      padding-inline-end: 8vw;
+    }
+    html[data-experience-on] .experience-chapter--start .exp-copy,
+    html[data-experience-on] .experience-chapter--end .exp-copy {
+      margin-inline: 0;
+      text-align: start;
+    }
+    html[data-experience-on] .experience-chapter--start .exp-actions,
+    html[data-experience-on] .experience-chapter--end .exp-actions {
+      justify-content: flex-start;
+    }
+  }
+  html[data-experience-on] .experience-cue {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    color: #475569;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  html[data-experience-on] .experience-cue svg {
+    width: 1rem;
+    height: 1rem;
+    animation: float 2.4s ease-in-out infinite;
+  }
+}
+
+/* ==========================================================================
+   Wireframe hero — always-dark cinematic band above the journey film.
+   Self-contained (deliberately theme-independent): a deep-navy blueprint that
+   holds its look in both light and dark site themes. Fonts come from the
+   shared @font-face in this file; entrance-hidden states apply only while the
+   engine is conducting (html.js + .lsx--js, before .lsx--settled).
+   ========================================================================== */
+@layer components {
+  .lsx {
+    --lsx-ink: #0a1322;
+    --lsx-draft: #d9e4f1;
+    --lsx-slate: #8fa0b6; /* WCAG AA (≥6:1) for the small mono annotations */
+    --lsx-accent: #f0521a;
+    --lsx-hair: rgba(217, 228, 241, 0.14);
+    --lsx-ax: clamp(1.5rem, 7vw, 6rem); /* vertical datum position */
+
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--lsx-draft);
+    /* Drawing-board field: faint blueprint micro-grid over deep ink */
+    background:
+      linear-gradient(rgba(217, 228, 241, 0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(217, 228, 241, 0.028) 1px, transparent 1px),
+      radial-gradient(120% 90% at 72% 30%, #10203a 0%, var(--lsx-ink) 58%);
+    background-size: 72px 72px, 72px 72px, 100% 100%;
+  }
+  /* Static structural-frame blueprint — occupies the right of the sheet where
+     the 3D structure used to render. Purely decorative SVG linework. */
+  .lsx-blueprint {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 56%;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6vh 3vw 9vh;
+    pointer-events: none;
+  }
+  .lsx-blueprint svg {
+    width: 100%;
+    height: 100%;
+    max-height: 84vh;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* Tower silhouette + fine spire — the elegant outline */
+  .lsx-blueprint .bl-edge {
+    stroke: var(--lsx-draft);
+    stroke-width: 1.4;
+    opacity: 0.62;
+  }
+  .lsx-blueprint .bl-spire {
+    stroke: var(--lsx-draft);
+    stroke-width: 1.1;
+    opacity: 0.75;
+  }
+  /* Delicate interior detail */
+  .lsx-blueprint .bl-floor {
+    stroke: var(--lsx-slate);
+    stroke-width: 0.7;
+    opacity: 0.36;
+  }
+  .lsx-blueprint .bl-mull {
+    stroke: var(--lsx-slate);
+    stroke-width: 0.6;
+    opacity: 0.28;
+  }
+  .lsx-blueprint .bl-ground {
+    stroke: var(--lsx-draft);
+    stroke-width: 1.6;
+    opacity: 0.6;
+  }
+  .lsx-blueprint .bl-door {
+    fill: none;
+    stroke: var(--lsx-draft);
+    stroke-width: 0.9;
+    opacity: 0.5;
+  }
+  /* Soft ground reflection */
+  .lsx-blueprint .bl-refl {
+    stroke: var(--lsx-slate);
+    stroke-width: 0.7;
+    opacity: 0.16;
+  }
+  /* Setting-out dimension line */
+  .lsx-blueprint .bl-dim {
+    stroke: var(--lsx-slate);
+    stroke-width: 0.7;
+    opacity: 0.5;
+  }
+  .lsx-blueprint .bl-wit {
+    stroke: var(--lsx-slate);
+    stroke-width: 0.6;
+    opacity: 0.28;
+    stroke-dasharray: 2 3;
+  }
+  /* Single gold accent — the summit node + datum */
+  .lsx-blueprint .bl-node {
+    fill: var(--lsx-accent);
+    opacity: 0.95;
+  }
+  /* Veil keeping the copy column readable over the drawing (dark left, clear
+     right where the frame sits). */
+  .lsx::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgba(10, 19, 34, 0.92) 0%,
+      rgba(10, 19, 34, 0.62) 38%,
+      rgba(10, 19, 34, 0.12) 66%,
+      transparent 100%
+    );
+  }
+
+  /* Datum axes — the setting-out lines the layout hangs from */
+  .lsx-ax-v,
+  .lsx-ax-h {
+    position: absolute;
+    z-index: 2;
+    background: var(--lsx-hair);
+    pointer-events: none;
+  }
+  .lsx-ax-v {
+    left: var(--lsx-ax);
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    transform-origin: top;
+  }
+  .lsx-ax-h {
+    left: 0;
+    right: 0;
+    bottom: 4.25rem;
+    height: 1px;
+    transform-origin: left;
+  }
+  .lsx-coord {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 0.575rem;
+    letter-spacing: 0.14em;
+    color: var(--lsx-slate);
+  }
+  .lsx-coord--v {
+    left: var(--lsx-ax);
+    top: 46%;
+    transform: translateX(-50%) rotate(180deg);
+    writing-mode: vertical-rl;
+  }
+  .lsx-coord--h {
+    right: 1.25rem;
+    bottom: 4.75rem;
+  }
+
+  .lsx-frame {
+    position: relative;
+    z-index: 3;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-inline: calc(var(--lsx-ax) + 2.5rem) clamp(1.5rem, 5vw, 4rem);
+  }
+
+  /* Top bar */
+  .lsx-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 1.6rem;
+  }
+  .lsx-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--lsx-slate);
+  }
+  .lsx-tag::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    background: var(--lsx-accent);
+  }
+  .lsx-geo {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    color: var(--lsx-slate);
+  }
+
+  /* Copy column */
+  .lsx-copy {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 38rem;
+    padding-block: 2rem 3rem;
+  }
+  .lsx-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--lsx-slate);
+    margin-bottom: 1.6rem;
+  }
+  .lsx-h {
+    font-family: var(--font-display);
+    font-weight: 750;
+    font-size: clamp(3.2rem, 8.2vw, 6.8rem);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    color: #eef4fb;
+  }
+  .lsx-wline {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.06em;
+  }
+  .lsx-w {
+    display: inline-block;
+    will-change: transform;
+  }
+  .lsx-dot {
+    color: var(--lsx-accent);
+  }
+  .lsx-lede {
+    margin-top: 1.75rem;
+    max-width: 30rem;
+    font-size: 1.02rem;
+    line-height: 1.65;
+    font-weight: 380;
+    color: #9fb0c4;
+  }
+  .lsx-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 2.2rem;
+  }
+  .lsx-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1.7rem;
+    font-size: 0.86rem;
+    font-weight: 560;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition:
+      transform 0.35s var(--ease-out-expo),
+      background 0.35s,
+      border-color 0.35s,
+      color 0.35s;
+  }
+  .lsx-btn:focus-visible {
+    outline: 2px solid var(--lsx-accent);
+    outline-offset: 3px;
+  }
+  .lsx-btn--primary {
+    background: var(--lsx-accent);
+    color: #0b0f16;
+  }
+  .lsx-btn--primary:hover {
+    background: #ff6a33;
+    transform: translateY(-2px);
+  }
+  .lsx-btn--ghost {
+    border: 1px solid rgba(117, 135, 157, 0.55);
+    color: var(--lsx-draft);
+  }
+  .lsx-btn--ghost:hover {
+    border-color: var(--lsx-accent);
+    transform: translateY(-2px);
+  }
+
+  /* Build log — the structural phases, reported live */
+  .lsx-log {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 2.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    color: var(--lsx-slate);
+  }
+  .lsx-marker {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border: 1px solid var(--lsx-accent);
+    animation: lsx-pulse 1.1s ease-in-out infinite;
+  }
+  .lsx--sound .lsx-marker {
+    background: var(--lsx-accent);
+    animation: none;
+  }
+  .lsx--sound .lsx-logtext {
+    color: var(--lsx-draft);
+  }
+  @keyframes lsx-pulse {
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  /* Title block — the drawing's own footer */
+  .lsx-tb {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+    column-gap: clamp(1.5rem, 4vw, 4rem);
+    row-gap: 0.5rem;
+    padding-block: 1.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    color: var(--lsx-slate);
+  }
+  .lsx-tb span {
+    white-space: nowrap;
+  }
+
+  /* Entrance-hidden states — only while JS is conducting the opening */
+  html.js .lsx--js:not(.lsx--settled) .lsx-w {
+    transform: translateY(112%);
+  }
+  html.js .lsx--js:not(.lsx--settled) :is(.e, .lsx-eyebrow, .lsx-lede, .lsx-btn, .lsx-tb span, .lsx-coord) {
+    opacity: 0;
+  }
+  html.js .lsx--js:not(.lsx--settled) .lsx-ax-v {
+    transform: scaleY(0);
+  }
+  html.js .lsx--js:not(.lsx--settled) .lsx-ax-h {
+    transform: scaleX(0);
+  }
+
+  @media (max-width: 880px) {
+    .lsx::after {
+      background: linear-gradient(
+        180deg,
+        rgba(10, 19, 34, 0.82) 0%,
+        rgba(10, 19, 34, 0.45) 55%,
+        rgba(10, 19, 34, 0.75) 100%
+      );
+    }
+    .lsx-frame {
+      padding-inline: calc(var(--lsx-ax) + 1.25rem) 1.25rem;
+    }
+    .lsx-tb {
+      grid-template-columns: repeat(2, auto);
+    }
+    .lsx-coord--h {
+      display: none;
+    }
+    /* Copy-first on mobile — the frame drawing would crowd the text column. */
+    .lsx-blueprint {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js .lsx--js .lsx-w {
+      transform: none;
+    }
+    html.js .lsx--js :is(.e, .lsx-eyebrow, .lsx-lede, .lsx-btn, .lsx-tb span, .lsx-coord) {
+      opacity: 1;
+    }
+    html.js .lsx--js .lsx-ax-v,
+    html.js .lsx--js .lsx-ax-h {
+      transform: none;
+    }
+    .lsx-marker {
+      animation: none;
+    }
+    .lsx-btn {
+      transition: none;
+    }
+  }
+}
+
+/* ==========================================================================
+   Homepage scroll choreography — support styles for the GSAP module.
+   ========================================================================== */
+@layer components {
+  /* Pinned stakeholder panel — left list of steps, right cross-fading plates */
+  .pin-panel {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+  .pin-step {
+    cursor: default;
+    border-top: 1px solid var(--color-line);
+    padding: 1.4rem 0;
+    transition:
+      opacity 0.45s var(--ease-out-expo),
+      padding-left 0.45s var(--ease-out-expo);
+  }
+  /* Dimming is a JS-driven effect — without the pin (no-JS / reduced motion)
+     every step stays fully legible. */
+  .is-pinned .pin-step:not(.is-active) {
+    opacity: 0.4;
+  }
+  .pin-step.is-active {
+    padding-left: 1.1rem;
+  }
+  .pin-step .pin-step-title {
+    position: relative;
+    transition: color 0.4s var(--ease-out-expo);
+  }
+  .pin-step.is-active .pin-step-title {
+    color: var(--color-brand-strong);
+  }
+  .pin-step.is-active .pin-step-title::before {
+    content: "";
+    position: absolute;
+    left: -1.1rem;
+    top: 0.55em;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--color-brand);
+  }
+  .pin-plate {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    opacity: 0; /* JS cross-fades; the first plate is the no-JS fallback */
+    will-change: opacity;
+  }
+  .pin-plate--first {
+    opacity: 1;
+  }
+
+  /* Big ghosted drawing index that parallaxes behind section headers */
+  .bp-ghost-index {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    line-height: 0.8;
+    color: color-mix(in oklab, var(--color-ink) 6%, transparent);
+    user-select: none;
+    pointer-events: none;
+  }
+  [data-theme="dark"] .bp-ghost-index {
+    color: color-mix(in oklab, var(--color-ink) 9%, transparent);
+  }
+}
+
+/* ==========================================================================
+   Drawing sheet — the homepage read as ONE continuous setting-out drawing.
+   A wrapper (.sheet) frames chapters 01–07; a faint datum rail runs the full
+   left gutter of every chapter and, because the chapters are contiguous, the
+   rails stack into a single unbroken setting-out line down the page. Over it,
+   one orange progress bar fills top→reader — the storyteller thread that ties
+   the whole narrative together. Rail + progress are a large-screen enhancement
+   (hidden < lg) and motion-gated; below that, chapters stack and the numbered
+   nodes fall back to plain inline indices. Nothing here gates content.
+   ========================================================================== */
+@layer components {
+  .sheet {
+    position: relative;
+  }
+
+  /* Continuous progress fill — one datum that advances with the reader. Its X
+     is pinned to the same centred 80rem column the chapters use, so it lands
+     exactly on their left rails and reads as the spine filling in. */
+  .sheet-progress {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+    display: none;
+  }
+  .sheet-progress__inner {
+    position: relative;
+    height: 100%;
+    max-width: 80rem; /* = max-w-7xl */
+    margin-inline: auto;
+  }
+  /* The faint full-height datum the reader travels down… */
+  .sheet-progress__track {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0.75rem;
+    width: 1px;
+    background: color-mix(in oklab, #7c8598 26%, transparent);
+  }
+  /* …and the orange fill that advances with the scroll (GSAP sets scaleY). */
+  .sheet-progress__bar {
+    position: absolute;
+    top: 0;
+    left: 0.75rem;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-0.5px) scaleY(0);
+    transform-origin: top center;
+    background: linear-gradient(
+      to bottom,
+      var(--color-brand),
+      color-mix(in oklab, var(--color-brand) 40%, transparent)
+    );
+  }
+  @media (min-width: 1024px) {
+    .sheet-progress {
+      display: block;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet-progress {
+      display: none;
+    }
+  }
+
+  .chapter {
+    position: relative;
+  }
+
+  /* Chapter node — the section index restyled as a numbered station. A hollow
+     setting-out tick that fills and turns to a diamond as its chapter is
+     reached, echoing the rail beside it. */
+  .chapter-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--color-brand-strong);
+  }
+  .chapter-node::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border: 1.5px solid var(--color-brand);
+    background: transparent;
+    transition:
+      background-color 0.55s var(--ease-out-expo),
+      transform 0.55s var(--ease-out-expo);
+  }
+  .chapter-node.is-reached::before {
+    background: var(--color-brand);
+    transform: rotate(45deg);
+  }
+  .bg-night .chapter-node,
+  .bg-brand .chapter-node {
+    color: var(--color-brand);
+  }
+  .bg-brand .chapter-node {
+    color: var(--color-on-brand);
+  }
+  .bg-brand .chapter-node::before {
+    border-color: var(--color-on-brand);
+  }
+  .bg-brand .chapter-node.is-reached::before {
+    background: var(--color-on-brand);
+  }
+}

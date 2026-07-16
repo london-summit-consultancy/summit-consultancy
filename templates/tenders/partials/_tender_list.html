@@ -1,0 +1,63 @@
+{% load humanize %}
+{% if tenders %}
+  <div class="overflow-x-auto card">
+    <table class="w-full text-sm min-w-[820px]">
+      <thead>
+        <tr class="text-left text-xs uppercase tracking-wider text-ink-subtle border-b border-line">
+          <th class="px-4 py-3 font-semibold">Reference</th>
+          <th class="px-4 py-3 font-semibold">Title</th>
+          <th class="px-4 py-3 font-semibold">Client</th>
+          <th class="px-4 py-3 font-semibold">Sector</th>
+          <th class="px-4 py-3 font-semibold">Deadline</th>
+          <th class="px-4 py-3 font-semibold">Value</th>
+          <th class="px-4 py-3 font-semibold">Status</th>
+          <th class="px-4 py-3 font-semibold">Team</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tender in tenders %}
+          <tr class="border-b border-line/60 hover:bg-surface-sunken/50 transition-colors">
+            <td class="px-4 py-3">
+              <span class="font-mono text-xs font-semibold text-brand-strong">{{ tender.reference }}</span>
+            </td>
+            <td class="px-4 py-3 font-medium max-w-[240px] truncate">{{ tender.title }}</td>
+            <td class="px-4 py-3 text-ink-muted">{{ tender.client_name }}</td>
+            <td class="px-4 py-3 text-ink-muted capitalize">{{ tender.get_sector_display }}</td>
+            <td class="px-4 py-3">
+              {% if tender.deadline %}
+                <span class="{% if tender.is_overdue %}text-danger font-semibold{% else %}text-ink-muted{% endif %}">
+                  {{ tender.deadline|date:"d M Y" }}{% if tender.is_overdue %} ⚠{% endif %}
+                </span>
+              {% else %}<span class="text-ink-subtle">—</span>{% endif %}
+            </td>
+            <td class="px-4 py-3 font-mono text-xs text-ink-muted">
+              {% if tender.estimated_value %}£{{ tender.estimated_value|floatformat:0|intcomma }}{% else %}—{% endif %}
+            </td>
+            <td class="px-4 py-3">
+              {% include "tenders/partials/_status_badge.html" with status=tender.status label=tender.get_status_display %}
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex -space-x-1.5">
+                {% for member in tender.assigned_to.all %}
+                  <span title="{{ member.get_full_name }}"
+                        class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand text-on-brand text-xs font-semibold ring-2 ring-surface-raised">
+                    {{ member.get_full_name|slice:":1"|upper }}
+                  </span>
+                {% empty %}<span class="text-ink-subtle text-xs">Unassigned</span>{% endfor %}
+              </div>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <a href="{{ tender.get_absolute_url }}" class="text-brand-strong font-medium hover:underline">View</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="card p-12 text-center">
+    <p class="text-ink-muted">No tenders found.</p>
+    <a href="{% url 'tenders:create' %}" class="btn btn-primary mt-4">Create the first tender</a>
+  </div>
+{% endif %}

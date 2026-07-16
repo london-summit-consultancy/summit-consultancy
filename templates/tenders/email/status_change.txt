@@ -1,0 +1,10 @@
+Tender {{ tender.reference }} — {{ tender.title }}
+
+The status of this tender has changed to: {{ new_status_display }}.
+{% if changed_by %}Changed by: {{ changed_by.get_full_name }}
+{% endif %}Client: {{ tender.client_name }}
+{% if tender.deadline %}Submission deadline: {{ tender.deadline|date:"d M Y" }}
+{% endif %}
+You are receiving this because you are assigned to this tender.
+
+— London Summit Consultancy, Tender Management

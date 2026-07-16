@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|default:"Portfolio" }} | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+
+{% block content %}
+{# ==================== PREMIUM ENTERPRISE HERO ==================== #}
+<section class="relative bg-surface border-b border-line overflow-hidden py-16 lg:py-24">
+  {# Background structural grid pattern #}
+  <div class="absolute inset-0 bg-grid opacity-20 pointer-events-none"></div>
+  <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/5 blur-3xl pointer-events-none"></div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <p class="kicker mb-5" data-reveal>Our Portfolio</p>
+    <h1 class="text-4xl lg:text-6xl font-bold text-ink leading-tight tracking-tight max-w-3xl mb-5" data-reveal>Proof in the projects</h1>
+    <p class="text-ink-muted text-lg max-w-2xl" data-reveal>A selection of our work across infrastructure and construction sectors, audited under RICS frameworks.</p>
+  </div>
+</section>
+
+{# ==================== 01 · PROJECT INDEX ==================== #}
+<section class="bg-surface">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
+    <header class="mb-8">
+      <span class="neu-index mb-5">01</span>
+      <p class="kicker mt-5">Filter by sector</p>
+    </header>
+
+    {# Sector filter — neumorphic chips #}
+    <div class="flex flex-wrap gap-3 mb-10">
+      <a href="{% url 'portfolio:list' %}"
+         hx-get="{% url 'portfolio:list' %}"
+         hx-target="#project-grid"
+         hx-swap="innerHTML"
+         hx-push-url="true"
+         class="chip {% if not selected_sector and not selected_service %}is-active{% endif %}">
+        All Projects
+      </a>
+      {% for value, label in sectors %}
+      <a href="{% url 'portfolio:list' %}?sector={{ value }}"
+         hx-get="{% url 'portfolio:list' %}?sector={{ value }}"
+         hx-target="#project-grid"
+         hx-swap="innerHTML"
+         hx-push-url="true"
+         class="chip {% if selected_sector == value %}is-active{% endif %}">
+        {{ label }}
+      </a>
+      {% endfor %}
+    </div>
+
+    {# Project grid — HTMX target #}
+    <div id="project-grid">
+      {% include "partials/_project_cards.html" %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

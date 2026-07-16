@@ -1,0 +1,13 @@
+Hello {{ user.get_full_name }},
+
+An account has been created for you on the London Summit Consultancy tender
+management tool.
+
+Please check your inbox for a separate email to verify your address, then
+sign in with your email and password at:
+
+  {{ login_url }}
+
+If you didn't expect this, you can ignore both emails.
+
+— London Summit Consultancy

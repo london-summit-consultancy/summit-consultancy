@@ -1,0 +1,51 @@
+{% load static %}
+{% comment %}
+  Interactive Wireframe Hero (LSX) — fully integrated with the Django project structure.
+  Renders the high-tech technical blueprint canvas, interactive coordinate crosshairs,
+  and authentic engineering title block metadata.
+  Driven on the client side by static/js/experience.min.js.
+{% endcomment %}
+
+<section class="lsx" data-hero-wireframe aria-label="London Summit Consultancy — construction consultancy, London">
+  <div class="lsx-canvas" aria-hidden="true"></div>
+
+  <span class="lsx-ax-v" aria-hidden="true"></span>
+  <span class="lsx-ax-h" aria-hidden="true"></span>
+  <span class="lsx-coord lsx-coord--v" aria-hidden="true">N 181 240 · E 530 090</span>
+  <span class="lsx-coord lsx-coord--h" aria-hidden="true">DATUM +4.20 m AOD</span>
+
+  <div class="lsx-frame">
+    <header class="lsx-top" aria-hidden="true">
+      <span class="lsx-tag e">Structural concept — Rev C</span>
+      <span class="lsx-geo e">51.5072° N — 0.1276° W</span>
+    </header>
+
+    <div class="lsx-copy">
+      <p class="lsx-eyebrow">Construction consultancy — London</p>
+      <h1 class="lsx-h">
+        <span class="lsx-wline"><span class="lsx-w lsx-w--1">Vision</span></span>
+        <span class="lsx-wline"><span class="lsx-w lsx-w--2">needs</span></span>
+        <span class="lsx-wline"><span class="lsx-w lsx-w--3">structure<span class="lsx-dot">.</span></span></span>
+      </h1>
+      <p class="lsx-lede">
+        Project management, quantity surveying and BIM for major builds —
+        loose intent, engineered into a frame that stands.
+      </p>
+      <div class="lsx-actions">
+        <a class="lsx-btn lsx-btn--primary" href="#">Book a consultation</a>
+        <a class="lsx-btn lsx-btn--ghost" href="#">See delivered work</a>
+      </div>
+      <p class="lsx-log" role="status">
+        <span class="lsx-marker" aria-hidden="true"></span>
+        <span class="lsx-logtext">STATUS — STRUCTURALLY SOUND</span>
+      </p>
+    </div>
+
+    <footer class="lsx-tb" aria-label="Drawing title block">
+      <span>DRG № LSC-HERO-001</span>
+      <span>SCALE 1:200 @ A1</span>
+      <span>REV C — FOR CONSTRUCTION</span>
+      <span>DATE 12.07.2026 · CHK LS</span>
+    </footer>
+  </div>
+</section>

@@ -1,0 +1,73 @@
+# fly.toml app configuration file for rivex-summit.
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+
+app = 'rivex-summit'
+primary_region = 'fra' # Frankfurt — closest Fly region to a UK consultancy
+console_command = '/code/manage.py shell'
+
+[build]
+
+# Runs in a temporary, secret-and-env-aware Machine before the new version's
+# Machines start (Fly's equivalent of Render's preDeployCommand, but not
+# plan-gated). Its filesystem does NOT persist, so this is only safe for
+# things whose effect lives in the database, not on disk — migrate qualifies,
+# collectstatic does not (that runs in bin/start.sh on every Machine boot).
+[deploy]
+  release_command = 'uv run --no-sync python manage.py migrate'
+
+[env]
+  DJANGO_SETTINGS_MODULE = 'config.settings.production'
+  ALLOWED_HOSTS = 'rivex-summit.fly.dev'
+  SITE_DOMAIN = 'rivex-summit.fly.dev' # sitemap.xml host + allauth emails — update if a custom domain is added later
+  # Local DeepSeek AI is an on-prem endpoint (Ollama etc.), not reachable from
+  # Fly. Explicitly blank so is_enabled() is False in production instead of
+  # inheriting the local-dev default (http://localhost:11434/v1), which would
+  # just fail every AI call.
+  DEEPSEEK_BASE_URL = ''
+  # Microsoft 365 SMTP AUTH (OAuth2/XOAUTH2 — see apps/core/ms365_smtp.py).
+  # smtp.office365.com is the organizational-mailbox endpoint, not
+  # smtp-mail.outlook.com (that host is for personal @outlook.com/@hotmail.com
+  # accounts). No IMAP/POP settings here — this app only sends mail, nothing
+  # reads it back. MS365_TENANT_ID / MS365_CLIENT_ID / MS365_CLIENT_SECRET /
+  # MS365_SMTP_USER are secrets, set via `fly secrets set`, not here.
+  EMAIL_HOST = 'smtp.office365.com'
+  EMAIL_PORT = '587'
+  EMAIL_USE_TLS = 'true'
+
+# ONE process group only. gunicorn and the Celery worker run together inside
+# it (via Procfile + honcho — see bin/start.sh), because the tender document
+# upload flow stages files on local disk (TENDER_UPLOAD_STAGING_DIR) and the
+# Celery task reads that same path — see apps/tenders/views.py/tasks.py. Fly
+# process groups run as SEPARATE Machines with separate filesystems, so
+# splitting this into "app"/"worker" groups would break uploads exactly like
+# splitting web/worker into separate Render services would have. Don't split
+# this without first refactoring the upload flow to write directly to R2.
+[processes]
+  app = './bin/start.sh'
+
+[http_service]
+  internal_port = 8000 # must match the port gunicorn binds to in Procfile
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '30s'
+    method = 'GET'
+    path = '/'
+    protocol = 'http'
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '1gb'
+
+# No [[statics]] block: static files are served by WhiteNoise (see
+# config/settings/production.py STORAGES["staticfiles"]), which renames files
+# with content hashes for cache-busting. Fly's native static serving would
+# need to point at the *collected* output (STATIC_ROOT), not the raw source
+# directory, and would bypass WhiteNoise's manifest entirely — simpler to
+# just let WhiteNoise handle it, matching how the app already works elsewhere.

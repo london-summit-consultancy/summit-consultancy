@@ -1,0 +1,68 @@
+{% load static %}
+{% comment %}
+  Neumorphic hero — a single soft surface. The headline column sits beside an
+  extruded "medallion" composition (raised rings, an inset well and floating
+  discipline chips). Server-rendered, fully legible, no JS/WebGL required.
+{% endcomment %}
+<section class="relative bg-surface"
+         aria-label="{{ site.brand_name|default:'London Summit Consultancy' }} — construction consultancy">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+    <div class="grid lg:grid-cols-2 gap-14 lg:gap-16 items-center">
+
+      {# Copy column #}
+      <div data-reveal-group="140">
+        <p class="kicker mb-6" data-reveal>Construction consultancy — London</p>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold text-ink leading-[1.08] mb-6" data-reveal>
+          Vision, engineered<br>into structure.
+        </h1>
+        <p class="text-lg text-ink-muted leading-relaxed max-w-xl mb-9" data-reveal>
+          Project management, quantity surveying and BIM for major builds —
+          loose intent, shaped into a frame that stands.
+        </p>
+        <div class="flex flex-wrap gap-4" data-reveal>
+          <a href="{% url 'inquiries:contact' %}" class="btn btn-primary">Book a consultation</a>
+          <a href="{% url 'portfolio:list' %}" class="btn btn-ghost">See delivered work</a>
+        </div>
+        <p class="inline-flex items-center gap-3 mt-10 text-sm text-ink-subtle" data-reveal>
+          <span class="inline-flex h-2.5 w-2.5 rounded-full bg-brand" aria-hidden="true"></span>
+          Trusted by clients, contractors &amp; consultancies
+        </p>
+      </div>
+
+      {# Extruded, animated medallion #}
+      <div class="relative hidden lg:flex items-center justify-center overflow-visible py-12" data-reveal="scale" aria-hidden="true">
+        <div class="relative w-[22rem] h-[22rem] overflow-visible">
+
+          {# Slow-orbiting dashed guide ring (the smaller svg) #}
+          <svg class="absolute inset-0 w-full h-full text-brand/30 animate-neu-spin" viewBox="0 0 352 352" fill="none" aria-hidden="true">
+            <circle cx="176" cy="176" r="150" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 12" stroke-linecap="round"/>
+            <circle cx="176" cy="26" r="4" fill="currentColor"/>
+          </svg>
+
+          {# Breathing extruded rings #}
+          <div class="absolute inset-0 rounded-full neu-lg animate-neu-breathe flex items-center justify-center">
+            <div class="w-[16rem] h-[16rem] rounded-full neu-inset flex items-center justify-center">
+              <div class="w-[9rem] h-[9rem] rounded-full neu-md animate-neu-float flex items-center justify-center text-brand-strong">
+                <svg class="w-16 h-16 animate-neu-float-soft" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-5a1 1 0 011-1h4a1 1 0 011 1v5M9 9h.01M15 9h.01M12 9h.01"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {% comment %}Discipline chips — identical pills; top/bottom straddle the outer ring via translate(-50%,∓50%). The centring transform sits on the wrapper, the float animation on the .chip, so they never conflict.{% endcomment %}
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+            <span class="chip !cursor-default animate-neu-float-soft">Project management</span>
+          </div>
+          <div class="absolute top-1/2 -right-6 -translate-y-1/2 z-20">
+            <span class="chip !cursor-default animate-neu-float-soft" style="animation-delay: 1.5s;">Quantity surveying</span>
+          </div>
+          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-20">
+            <span class="chip !cursor-default animate-neu-float-soft" style="animation-delay: 3s;">BIM modelling</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

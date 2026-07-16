@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|default:"Get in Touch" }} | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+
+{% block content %}
+{# ==================== PAGE HERO ==================== #}
+<section class="bg-surface">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+    <p class="kicker mb-5" data-reveal>Get in Touch</p>
+    <h1 class="text-4xl lg:text-6xl font-semibold text-ink leading-tight max-w-3xl mb-5" data-reveal>Start your next project</h1>
+    <p class="text-ink-muted text-lg max-w-2xl" data-reveal>Tell us about your requirements and we'll be in touch within one business day.</p>
+  </div>
+</section>
+
+{# ==================== 01 · PROJECT BRIEF ==================== #}
+<section class="bg-surface">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+    <!-- Form -->
+    <div class="lg:col-span-2" data-reveal>
+      <span class="neu-index mb-5">01</span>
+      <p class="kicker mt-5 mb-8">Project brief</p>
+      <div class="card p-7 lg:p-9">
+        <div id="contact-form">
+          {% include "partials/_inquiry_form.html" %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact info -->
+    <aside class="space-y-8" data-reveal="right">
+      <div class="card p-7">
+        <h2 class="font-semibold text-ink mb-5">Contact Details</h2>
+        <ul class="space-y-5 text-sm">
+          {% if site.email %}
+          <li>
+            <span class="text-xs uppercase tracking-wide font-semibold text-ink-subtle block mb-1">Email</span>
+            <a href="mailto:{{ site.email }}" class="link-underline text-brand-strong font-medium">{{ site.email }}</a>
+          </li>
+          {% endif %}
+          {% if site.phone %}
+          <li>
+            <span class="text-xs uppercase tracking-wide font-semibold text-ink-subtle block mb-1">Phone</span>
+            <a href="tel:{{ site.phone }}" class="text-ink font-medium hover:text-brand-strong transition-colors">{{ site.phone }}</a>
+          </li>
+          {% endif %}
+          {% if site.address %}
+          <li>
+            <span class="text-xs uppercase tracking-wide font-semibold text-ink-subtle block mb-1">Address</span>
+            <span class="text-ink-muted leading-relaxed">{{ site.address }}</span>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+      <p class="text-sm text-ink-muted leading-relaxed px-1">{{ site.footer_location_text|default:"Serving clients across London and the Gulf region." }}</p>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

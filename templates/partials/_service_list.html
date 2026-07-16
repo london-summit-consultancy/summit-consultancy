@@ -1,0 +1,28 @@
+{% for category in categories %}
+<div class="mb-16">
+  <div class="mb-8 max-w-2xl" data-reveal>
+    <span class="text-brand-strong text-sm font-semibold">{{ forloop.counter|stringformat:"02d" }}</span>
+    <h2 class="text-2xl lg:text-3xl font-semibold text-ink mt-2">{{ category.headline }}</h2>
+    <p class="text-ink-muted mt-2">{{ category.description }}</p>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-reveal-group="120">
+    {% for service in category.services.all %}
+    <a href="{{ service.get_absolute_url }}" class="card card-interactive group flex flex-col p-6" data-reveal>
+      <div class="flex items-center justify-between mb-4">
+        <span class="neu-icon neu-icon-inset text-xs font-semibold">{{ forloop.counter|stringformat:"02d" }}</span>
+      </div>
+      <h3 class="font-semibold text-ink mb-2 group-hover:text-brand-strong transition-colors">{{ service.name }}</h3>
+      <p class="text-ink-muted text-sm leading-relaxed flex-1">{{ service.short_desc }}</p>
+      <span class="inline-flex items-center gap-1.5 mt-5 text-brand-strong text-xs font-semibold uppercase tracking-wide">
+        Learn more
+        <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"/></svg>
+      </span>
+    </a>
+    {% empty %}
+    <p class="text-ink-subtle col-span-3">No services in this category yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% empty %}
+<p class="text-ink-muted py-12 text-center">No services found.</p>
+{% endfor %}

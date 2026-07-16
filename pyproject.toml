@@ -1,0 +1,56 @@
+[project]
+name = "london-summit"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.1",
+    "django-htmx>=1.21",
+    "psycopg[binary]>=3",
+    "redis>=5",
+    "celery>=5.4",
+    "django-environ",
+    "django-storages[s3]",
+    "django-ses",
+    "django-imagekit",
+    "pillow",
+    "django-ratelimit",
+    "django-prose-editor[sanitize]",
+    "django-simple-history",
+    "whitenoise",
+    "sentry-sdk[django]",
+    "django-csp>=4.0",
+    "django-allauth[socialaccount]>=65.18.0",
+    "python-magic>=0.4.27",
+    "ably>=3.1.2",
+    "pypdf>=6.14.2",
+    "httpx>=0.28.1",
+    "gunicorn>=23.0",
+    "honcho>=2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-django",
+    "factory-boy",
+    "ruff",
+    "pre-commit",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = ["**/migrations/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+ignore = ["B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["apps", "config"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.local"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

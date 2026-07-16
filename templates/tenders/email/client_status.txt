@@ -1,0 +1,10 @@
+Dear {{ tender.client_name }},
+
+We wanted to keep you in the loop on "{{ tender.title }}".
+
+{% if tender.status == 'submitted' %}Our proposal for your project has now been submitted, and our team is on hand for any questions you may have.{% elif tender.status == 'won' %}We're delighted to be moving forward together on your project — thank you for placing your trust in us. Our team will be in touch to get started.{% else %}There's been an update to your project.{% endif %}
+
+Thank you for working with us. We genuinely value the relationship.
+
+Warm regards,
+London Summit Consultancy

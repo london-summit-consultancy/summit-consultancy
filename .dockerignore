@@ -1,0 +1,15 @@
+fly.toml
+.git/
+*.sqlite3
+.venv
+node_modules
+.claude
+staticfiles
+media
+private_media
+tender_staging
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.env

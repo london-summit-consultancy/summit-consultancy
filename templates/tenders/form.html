@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block extra_head %}{{ form.media }}{% endblock %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <a href="{% if is_create %}{% url 'tenders:list' %}{% else %}{{ tender.get_absolute_url }}{% endif %}"
+     class="text-sm text-ink-muted hover:text-brand-strong">← Cancel</a>
+
+  <h1 class="font-display text-3xl font-bold mt-3 mb-8">{{ page_title }}</h1>
+
+  <form method="post"
+        action="{% if is_create %}{% url 'tenders:create' %}{% else %}{% url 'tenders:update' tender.public_id %}{% endif %}"
+        class="space-y-6">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="rounded-lg border border-danger/40 bg-danger-soft px-4 py-3 text-sm text-danger">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div>
+      <label class="field-label" for="{{ form.title.id_for_label }}">Title</label>
+      {{ form.title }}
+      {% if form.title.errors %}<p class="text-danger text-xs mt-1">{{ form.title.errors.0 }}</p>{% endif %}
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-5">
+      <div>
+        <label class="field-label" for="{{ form.client_name.id_for_label }}">Client name</label>
+        {{ form.client_name }}
+        {% if form.client_name.errors %}<p class="text-danger text-xs mt-1">{{ form.client_name.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="field-label" for="{{ form.client_email.id_for_label }}">Client email</label>
+        {{ form.client_email }}
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-5">
+      <div>
+        <label class="field-label" for="{{ form.sector.id_for_label }}">Sector</label>
+        {{ form.sector }}
+      </div>
+      <div>
+        <label class="field-label" for="{{ form.deadline.id_for_label }}">Deadline</label>
+        {{ form.deadline }}
+      </div>
+      <div>
+        <label class="field-label" for="{{ form.estimated_value.id_for_label }}">Est. value (£ GBP)</label>
+        {{ form.estimated_value }}
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label" for="{{ form.description.id_for_label }}">Description</label>
+      {{ form.description }}
+      {% if form.description.errors %}<p class="text-danger text-xs mt-1">{{ form.description.errors.0 }}</p>{% endif %}
+      {% if ai_enabled %}
+        <div class="mt-2 flex items-center gap-3">
+          <button type="button" class="text-sm text-brand-strong hover:underline"
+                  data-ai-draft-description
+                  data-url="{% url 'tenders:ai_draft_description' %}"
+                  data-title="#{{ form.title.id_for_label }}"
+                  data-client="#{{ form.client_name.id_for_label }}"
+                  data-sector="#{{ form.sector.id_for_label }}"
+                  data-target="#{{ form.description.id_for_label }}">✨ Draft with AI</button>
+          <span data-ai-desc-status class="text-xs text-ink-subtle"></span>
+        </div>
+      {% endif %}
+    </div>
+
+    <div>
+      <span class="field-label">Assign to</span>
+      <div class="rounded-lg border border-line-strong p-3" data-assignee-picker>
+        <input type="text" class="field-input mb-3" placeholder="Search staff…" data-assignee-search
+               aria-label="Filter staff">
+        <ul class="space-y-1.5 max-h-52 overflow-y-auto">
+          {% for checkbox in form.assigned_to %}
+            <li data-assignee-option>
+              <label class="flex items-center gap-2.5 px-2 py-1.5 rounded hover:bg-surface-sunken cursor-pointer text-sm">
+                {{ checkbox.tag }}
+                <span>{{ checkbox.choice_label }}</span>
+              </label>
+            </li>
+          {% empty %}
+            <li class="text-sm text-ink-subtle">No staff users available.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <label class="field-label" for="{{ form.notes.id_for_label }}">Internal notes</label>
+      {{ form.notes }}
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <button type="submit" class="btn btn-primary">{% if is_create %}Create tender{% else %}Save changes{% endif %}</button>
+      <a href="{% if is_create %}{% url 'tenders:list' %}{% else %}{{ tender.get_absolute_url }}{% endif %}" class="btn btn-dark">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/tenders.js' %}" defer></script>
+{% endblock %}

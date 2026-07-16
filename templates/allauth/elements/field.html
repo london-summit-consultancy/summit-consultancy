@@ -1,0 +1,51 @@
+{% comment %}
+  Override of allauth's field element so every account form field uses the
+  site's .field-label / .field-input styling. Keeps allauth's slot contract
+  (label / value / help_text) and attribute passthrough intact.
+{% endcomment %}
+{% load allauth %}
+{% if attrs.errors %}
+    <div class="mb-2 text-sm text-danger">{{ attrs.errors }}</div>
+{% endif %}
+<div class="mb-4">
+    {% if attrs.type == "textarea" %}
+        <label class="field-label" for="{{ attrs.id }}">
+            {% slot label %}{% endslot %}
+        </label>
+        <textarea class="field-input"
+                  {% if attrs.required %}required{% endif %}
+                  {% if attrs.rows %}rows="{{ attrs.rows }}"{% endif %}
+                  {% if attrs.disabled %}disabled{% endif %}
+                  {% if attrs.readonly %}readonly{% endif %}
+                  {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+                  {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+                  {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}>{% slot value %}{% endslot %}</textarea>
+    {% elif attrs.type == "checkbox" or attrs.type == "radio" %}
+        <label class="inline-flex items-center gap-2 text-sm text-ink">
+            <input {% if attrs.required %}required{% endif %}
+                   {% if attrs.checked %}checked{% endif %}
+                   {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+                   {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+                   {% if attrs.value is not None %}value="{{ attrs.value }}"{% endif %}
+                   type="{{ attrs.type }}">
+            {% slot label %}{% endslot %}
+        </label>
+    {% else %}
+        <label class="field-label" for="{{ attrs.id }}">
+            {% slot label %}{% endslot %}
+        </label>
+        <input class="field-input"
+               {% if attrs.required %}required{% endif %}
+               {% if attrs.disabled %}disabled{% endif %}
+               {% if attrs.readonly %}readonly{% endif %}
+               {% if attrs.name %}name="{{ attrs.name }}"{% endif %}
+               {% if attrs.id %}id="{{ attrs.id }}"{% endif %}
+               {% if attrs.placeholder %}placeholder="{{ attrs.placeholder }}"{% endif %}
+               {% if attrs.autocomplete %}autocomplete="{{ attrs.autocomplete }}"{% endif %}
+               {% if attrs.value is not None %}value="{{ attrs.value }}"{% endif %}
+               type="{{ attrs.type }}">
+    {% endif %}
+    {% if slots.help_text %}
+        <span class="block text-xs text-ink-subtle mt-1.5">{% slot help_text %}{% endslot %}</span>
+    {% endif %}
+</div>

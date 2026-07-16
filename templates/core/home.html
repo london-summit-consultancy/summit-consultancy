@@ -1,0 +1,832 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+{% comment %}
+  ==================== NEUMORPHIC HERO ====================
+  A soft-surface opener: headline column beside an extruded medallion.
+{% endcomment %}
+<div id="hero-section-container">
+  {% include "core/_hero_wireframe.html" %}
+</div>
+
+{# ==================== 01 · CAPACITY & INTERACTIVE DRAFTING DESK ==================== #}
+<section id="capacity-drafting-desk" class="bg-surface relative bp-field py-16 lg:py-24 border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <header id="drafting-desk-header" class="max-w-3xl mb-12">
+      <span id="capacity-index-badge" class="neu-index mb-5">01</span>
+      <p id="capacity-kicker" class="kicker mt-5 mb-4">Drafting Desk</p>
+      <h2 id="capacity-heading" class="text-3xl lg:text-5xl font-semibold text-ink leading-tight">Setting out project capability in real-time</h2>
+      <p id="capacity-lead-text" class="text-ink-muted text-lg mt-4">Measured capacity, backed by deep digital models. Explore our reach and interact with our structural layers below.</p>
+    </header>
+
+    {# Capacity Quick Counters Grid #}
+    <div id="counters-reveal-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16" data-reveal-group="120">
+      <div id="counter-card-services" class="card p-8 text-center" data-reveal>
+        <p class="text-5xl font-semibold text-brand-strong"><span data-counter data-to="{{ services_count }}">{{ services_count }}</span></p>
+        <p class="text-sm text-ink-subtle mt-3">Specialist services</p>
+      </div>
+      <div id="counter-card-stakeholders" class="card p-8 text-center" data-reveal>
+        <p class="text-5xl font-semibold text-brand-strong"><span data-counter data-to="{{ stakeholder_count }}">{{ stakeholder_count }}</span></p>
+        <p class="text-sm text-ink-subtle mt-3">Stakeholder groups</p>
+      </div>
+      <div id="counter-card-sectors" class="card p-8 text-center" data-reveal>
+        <p class="text-5xl font-semibold text-brand-strong"><span data-counter data-to="{{ sector_count }}">{{ sector_count }}</span></p>
+        <p class="text-sm text-ink-subtle mt-3">Construction sectors</p>
+      </div>
+      <div id="counter-card-lifecycle" class="card p-8 text-center" data-reveal>
+        <p class="text-5xl font-semibold text-brand-strong"><span data-counter data-to="100" data-suffix="%">100%</span></p>
+        <p class="text-sm text-ink-subtle mt-3">Project lifecycle covered</p>
+      </div>
+    </div>
+
+    {# Interactive Blueprint & BIM Simulator Widget #}
+    <div id="bim-workspace-card" class="card p-6 lg:p-10 mb-8" data-reveal="scale">
+      <div class="grid lg:grid-cols-12 gap-10 items-center">
+        
+        {# Workspace Controls #}
+        <div id="bim-controls-column" class="lg:col-span-5 space-y-6">
+          <div id="bim-badge-row" class="flex items-center gap-2">
+            <span class="inline-flex h-2.5 w-2.5 rounded-full bg-brand animate-pulse"></span>
+            <span class="text-xs font-mono uppercase tracking-widest text-ink-subtle">Digital Workspace v2.4</span>
+          </div>
+          
+          <h3 id="workspace-subheading" class="text-2xl lg:text-3xl font-semibold text-ink">BIM & Quantity Surveying Simulator</h3>
+          <p id="workspace-description" class="text-ink-muted text-sm leading-relaxed">
+            Toggle between core layers to witness how our drawings bridge conceptual aesthetics with concrete, audited financial outputs.
+          </p>
+
+          {# Interactive Switches #}
+          <div id="workspace-toggle-pills" class="space-y-3">
+            <button id="btn-layer-bim" onclick="switchBimLayer('bim')" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-brand bg-brand-soft/50 text-brand-strong font-semibold shadow-sm" aria-label="Switch to BIM structural layer">
+              <span id="layer-num-bim" class="w-8 h-8 rounded-full bg-brand text-on-brand flex items-center justify-center text-xs font-mono font-bold shadow-sm">01</span>
+              <div>
+                <span class="block text-sm">BIM & Structural Wireframe</span>
+                <span class="block text-xs text-ink-subtle font-normal">Interactive structural layout detailing grid nodes & dimensions.</span>
+              </div>
+            </button>
+            <button id="btn-layer-qs" onclick="switchBimLayer('qs')" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs" aria-label="Switch to QS financial layer">
+              <span id="layer-num-qs" class="w-8 h-8 rounded-full bg-surface-sunken flex items-center justify-center text-xs font-mono text-ink-subtle border border-line/50">02</span>
+              <div>
+                <span class="block text-sm text-ink">Quantity Surveying & Material Audits</span>
+                <span class="block text-xs text-ink-subtle font-normal">Real-time material takeoff estimates and contingency metrics.</span>
+              </div>
+            </button>
+            <button id="btn-layer-timeline" onclick="switchBimLayer('timeline')" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs" aria-label="Switch to project timeline layer">
+              <span id="layer-num-timeline" class="w-8 h-8 rounded-full bg-surface-sunken flex items-center justify-center text-xs font-mono text-ink-subtle border border-line/50">03</span>
+              <div>
+                <span class="block text-sm text-ink">Critical Path & Milestone Progression</span>
+                <span class="block text-xs text-ink-subtle font-normal">Setout delivery stages from concept to handover.</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {# SVG Interactive Visualizer Panel #}
+        <div id="bim-visualizer-container" class="lg:col-span-7 flex flex-col items-center justify-center">
+          <div id="canvas-drawing-board" class="w-full aspect-[4/3] rounded-2xl border border-line/80 bg-surface-sunken p-6 relative overflow-hidden flex flex-col justify-between shadow-xs">
+            
+            {# Background grid sheet #}
+            <div id="canvas-blueprint-grid" class="absolute inset-0 bg-grid opacity-30 pointer-events-none"></div>
+            
+            {# Header bar inside the simulator #}
+            <div id="canvas-hud-header" class="flex items-center justify-between z-10 text-[10px] font-mono text-ink-subtle border-b border-line pb-2.5">
+              <span id="hud-status-active">SYS: READY // ACTIVE_PROJ_MODEL</span>
+              <span id="hud-coordinates">X: 194.20 / Y: 84.11</span>
+            </div>
+
+            {# Main Graphic (Dynamic SVGs based on layer state) #}
+            <div id="canvas-dynamic-viewport" class="flex-1 flex items-center justify-center relative py-4">
+              
+              {# BIM Wireframe SVG #}
+              <svg id="svg-layer-bim" class="w-4/5 h-4/5 text-brand transition-all duration-500 scale-100 opacity-100" viewBox="0 0 400 300" fill="none">
+                <!-- Isometric structural frame of a building model -->
+                <path d="M200 60 L320 120 L200 180 L80 120 Z" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" />
+                <path d="M200 180 L320 240 L200 290 L80 240 Z" stroke="currentColor" stroke-width="1.5" />
+                <line x1="80" y1="120" x2="80" y2="240" stroke="currentColor" stroke-width="2" />
+                <line x1="200" y1="180" x2="200" y2="290" stroke="currentColor" stroke-width="2" />
+                <line x1="320" y1="120" x2="320" y2="240" stroke="currentColor" stroke-width="2" />
+                <!-- Grid nodes -->
+                <circle cx="200" cy="60" r="4" fill="currentColor" class="animate-ping" style="animation-duration: 3s;" />
+                <circle cx="320" cy="120" r="3" fill="currentColor" />
+                <circle cx="80" cy="120" r="3" fill="currentColor" />
+                <circle cx="200" cy="180" r="4" fill="#389dc6" />
+                <!-- Dimensions text annotations -->
+                <text x="260" y="80" fill="#66799e" font-size="8" font-family="monospace">W: 14.50m</text>
+                <text x="110" y="80" fill="#66799e" font-size="8" font-family="monospace">L: 28.12m</text>
+                <text x="210" y="240" fill="#66799e" font-size="8" font-family="monospace">H: 12.00m</text>
+              </svg>
+
+              {# QS Financials SVG (Initially Hidden) #}
+              <svg id="svg-layer-qs" class="w-4/5 h-4/5 text-secondary transition-all duration-500 scale-95 opacity-0 absolute pointer-events-none" viewBox="0 0 400 300" fill="none">
+                <!-- Bar layout representing costs and takeoffs -->
+                <rect x="50" y="220" width="40" height="40" rx="3" fill="#128759" opacity="0.8" />
+                <rect x="110" y="160" width="40" height="100" rx="3" fill="#128759" opacity="0.8" />
+                <rect x="170" y="100" width="40" height="160" rx="3" fill="#389dc6" opacity="0.8" />
+                <rect x="230" y="60" width="40" height="200" rx="3" fill="#389dc6" opacity="0.8" />
+                <!-- Cost labels -->
+                <text x="50" y="210" fill="#31344b" font-weight="bold" font-size="9" font-family="sans-serif">£14k</text>
+                <text x="110" y="150" fill="#31344b" font-weight="bold" font-size="9" font-family="sans-serif">£42k</text>
+                <text x="170" y="90" fill="#31344b" font-weight="bold" font-size="9" font-family="sans-serif">£120k</text>
+                <text x="230" y="50" fill="#31344b" font-weight="bold" font-size="9" font-family="sans-serif">£280k</text>
+                <!-- Axis lines -->
+                <line x1="30" y1="260" x2="360" y2="260" stroke="#c4ccd7" stroke-width="1.5" />
+                <line x1="30" y1="40" x2="30" y2="260" stroke="#c4ccd7" stroke-width="1.5" />
+                <text x="50" y="275" fill="#66799e" font-size="8" font-family="monospace">FOUNDATION</text>
+                <text x="115" y="275" fill="#66799e" font-size="8" font-family="monospace">FRAME</text>
+                <text x="175" y="275" fill="#66799e" font-size="8" font-family="monospace">SERVICES</text>
+                <text x="235" y="275" fill="#66799e" font-size="8" font-family="monospace">HANDOVER</text>
+              </svg>
+
+              {# Timeline Milestones SVG (Initially Hidden) #}
+              <svg id="svg-layer-timeline" class="w-4/5 h-4/5 text-ink transition-all duration-500 scale-95 opacity-0 absolute pointer-events-none" viewBox="0 0 400 300" fill="none">
+                <!-- Process path connector -->
+                <path d="M50 150 Q 150 50, 200 150 T 350 150" stroke="#d5dbe3" stroke-width="3" stroke-linecap="round" />
+                <path d="M50 150 Q 150 50, 200 150" stroke="#128759" stroke-width="3" stroke-linecap="round" stroke-dasharray="10 4" />
+                <!-- Milestone nodes -->
+                <circle cx="50" cy="150" r="10" fill="#128759" stroke="#ecf0f3" stroke-width="2" />
+                <circle cx="140" cy="100" r="10" fill="#128759" stroke="#ecf0f3" stroke-width="2" />
+                <circle cx="200" cy="150" r="10" fill="#389dc6" stroke="#ecf0f3" stroke-width="2" class="animate-pulse" />
+                <circle cx="280" cy="190" r="8" fill="#66799e" stroke="#ecf0f3" stroke-width="2" />
+                <circle cx="350" cy="150" r="8" fill="#66799e" stroke="#ecf0f3" stroke-width="2" />
+                <!-- Nodes label text -->
+                <text x="40" y="130" fill="#31344b" font-weight="bold" font-size="9">01 Concept</text>
+                <text x="110" y="80" fill="#31344b" font-weight="bold" font-size="9">02 Tendering</text>
+                <text x="180" y="135" fill="#128759" font-weight="bold" font-size="9">03 Audits (LIVE)</text>
+                <text x="260" y="215" fill="#66799e" font-size="9">04 Site QS</text>
+                <text x="325" y="135" fill="#66799e" font-size="9">05 Closure</text>
+              </svg>
+            </div>
+
+            {# Footer detail inside simulator #}
+            <div id="canvas-hud-footer" class="flex items-center justify-between border-t border-line pt-2.5 z-10">
+              <div id="canvas-status-log" class="text-[10px] font-mono text-ink-muted">
+                CURRENT DELIVERABLE: <span id="span-active-deliverable" class="text-brand-strong font-semibold uppercase">3D CAD Wireframe Schema</span>
+              </div>
+              <div id="canvas-revision-indicator" class="text-[9px] font-mono text-ink-subtle bg-line px-2 py-0.5 rounded-full">REV C</div>
+            </div>
+            
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{# ==================== 02 · INTERACTIVE BUDGET & SCOPE ESTIMATOR ==================== #}
+<section id="budget-scope-estimator" class="bg-surface relative py-16 lg:py-24 border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div id="estimator-row-grid" class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      
+      {# Text Introduction #}
+      <div id="estimator-intro-col" class="lg:col-span-5" data-reveal="left">
+        <span id="estimator-index-badge" class="neu-index mb-5">02</span>
+        <p id="estimator-kicker" class="kicker mt-5 mb-4">Interactive Fee Planner</p>
+        <h2 id="estimator-heading" class="text-3xl lg:text-4xl font-semibold text-ink leading-tight">Plan your project scale & estimate our service fee</h2>
+        <p id="estimator-description" class="text-ink-muted text-base leading-relaxed mt-4">
+          Estimate professional cost structures based on construction value. Custom-build your commission scope and generate a direct blueprint copy for your procurement review.
+        </p>
+        
+        <div id="estimator-features-list" class="mt-8 space-y-4">
+          <div id="estimator-feature-1" class="flex items-start gap-3">
+            <span class="w-5 h-5 rounded-full bg-brand-soft text-brand-strong flex items-center justify-center text-xs shrink-0 mt-0.5 font-bold">✓</span>
+            <p class="text-sm text-ink-muted"><strong class="text-ink">Highly accurate:</strong> Sourced against standard UK/GCC RICS fee curves.</p>
+          </div>
+          <div id="estimator-feature-2" class="flex items-start gap-3">
+            <span class="w-5 h-5 rounded-full bg-brand-soft text-brand-strong flex items-center justify-center text-xs shrink-0 mt-0.5 font-bold">✓</span>
+            <p class="text-sm text-ink-muted"><strong class="text-ink">Modular support:</strong> Select only the capabilities your building team needs.</p>
+          </div>
+          <div id="estimator-feature-3" class="flex items-start gap-3">
+            <span class="w-5 h-5 rounded-full bg-brand-soft text-brand-strong flex items-center justify-center text-xs shrink-0 mt-0.5 font-bold">✓</span>
+            <p class="text-sm text-ink-muted"><strong class="text-ink">No obligations:</strong> Formulate an outline brief with immediate outputs.</p>
+          </div>
+        </div>
+      </div>
+
+      {# Calculator Card Interactive Workspace #}
+      <div id="estimator-card-col" class="lg:col-span-7" data-reveal="right">
+        <div id="estimator-interactive-card" class="card p-6 sm:p-10 space-y-8">
+          
+          {# Sector selector #}
+          <div id="input-sector-group" class="space-y-3">
+            <label class="block text-xs font-mono uppercase tracking-widest text-ink-subtle">01 · Choose Project Sector</label>
+            <div id="sector-pill-selector" class="grid grid-cols-3 gap-3">
+              <button id="btn-sec-infra" onclick="setEstimatorSector('infra')" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-on-brand bg-brand border-brand shadow-sm">
+                Infrastructure
+              </button>
+              <button id="btn-sec-comm" onclick="setEstimatorSector('comm')" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink">
+                Commercial
+              </button>
+              <button id="btn-sec-res" onclick="setEstimatorSector('res')" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink">
+                Residential
+              </button>
+            </div>
+          </div>
+
+          {# Project scale slider #}
+          <div id="input-budget-group" class="space-y-3">
+            <div class="flex justify-between items-center text-xs font-mono">
+              <label class="uppercase tracking-widest text-ink-subtle">02 · Anticipated Build Cost</label>
+              <span id="slider-budget-value" class="text-brand-strong font-bold">£5,000,000</span>
+            </div>
+            <div class="relative flex items-center">
+              <input id="slider-budget" type="range" min="1" max="10" value="5" oninput="updateEstimator()" class="w-full h-2 bg-line/80 rounded-lg appearance-none cursor-pointer accent-brand" aria-label="Anticipated construction build cost slider">
+            </div>
+            <div class="flex justify-between text-[10px] font-mono text-ink-subtle">
+              <span>£500k</span>
+              <span>£10m</span>
+              <span>£50m+</span>
+            </div>
+          </div>
+
+          {# Checkboxes for services #}
+          <div id="input-services-group" class="space-y-3">
+            <label class="block text-xs font-mono uppercase tracking-widest text-ink-subtle">03 · Select Required Services</label>
+            <div id="services-checkbox-grid" class="grid sm:grid-cols-2 gap-3">
+              
+              <label id="lbl-check-qs" class="flex items-center gap-3 p-3.5 rounded-xl border border-brand bg-brand-soft/50 text-brand-strong cursor-pointer shadow-sm transition-all">
+                <input id="check-service-qs" type="checkbox" checked onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Quantity Surveying & Cost Audits service">
+                <span class="text-xs font-semibold text-ink">Quantity Surveying & Auditing</span>
+              </label>
+
+              <label id="lbl-check-bim" class="flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all">
+                <input id="check-service-bim" type="checkbox" onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include BIM Coordination & 3D Modeling service">
+                <span class="text-xs font-semibold text-ink">BIM & 3D Coordination</span>
+              </label>
+
+              <label id="lbl-check-pm" class="flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all">
+                <input id="check-service-pm" type="checkbox" onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Project Management & Employer Agent service">
+                <span class="text-xs font-semibold text-ink">Project Management / EA</span>
+              </label>
+
+              <label id="lbl-check-proc" class="flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all">
+                <input id="check-service-proc" type="checkbox" onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Bid Administration & Procurement service">
+                <span class="text-xs font-semibold text-ink">Tenders & Procurement</span>
+              </label>
+
+            </div>
+          </div>
+
+          {# Calculated outputs #}
+          <div id="estimator-calculations-panel" class="border border-line bg-surface-sunken p-5 rounded-2xl grid grid-cols-2 gap-6 relative overflow-hidden shadow-xs">
+            <div class="absolute inset-0 bg-grid opacity-10 pointer-events-none"></div>
+            
+            <div id="calc-col-fees" class="space-y-1 relative z-10">
+              <span class="block text-[10px] font-mono text-ink-subtle uppercase">ESTIMATED FEE RANGE</span>
+              <span id="output-fee-range" class="block text-xl sm:text-2xl font-bold text-brand-strong">£45k - £60k</span>
+              <span class="block text-[10px] text-ink-subtle font-normal">Approx. 0.9% of construction cost</span>
+            </div>
+
+            <div id="calc-col-timeline" class="space-y-1 relative z-10">
+              <span class="block text-[10px] font-mono text-ink-subtle uppercase">ESTIMATED CYCLE DURATION</span>
+              <span id="output-timeline-duration" class="block text-xl sm:text-2xl font-bold text-ink">14 - 18 Months</span>
+              <span class="block text-[10px] text-ink-subtle font-normal">Based on selected project scale</span>
+            </div>
+          </div>
+
+          {# Dynamic summary + action button #}
+          <div id="estimator-card-footer" class="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div id="estimator-footer-meta" class="text-xs text-ink-muted">
+              Estimated scope is tailored for <span id="output-meta-scope" class="font-bold text-ink">Infrastructure development</span>.
+            </div>
+            <button id="btn-copy-scope" onclick="copyProjectScope()" class="btn btn-primary text-xs !px-5 !py-3 flex items-center justify-center gap-2" aria-label="Copy generated project scope specification to clipboard">
+              <svg id="svg-copy-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              <span id="btn-copy-text">Copy Scope Blueprint</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{# ==================== 03 · SERVICES (WHAT WE DO) ==================== #}
+{% if featured_services %}
+<section id="services-overview-section" class="bg-surface relative py-16 lg:py-24 border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <header id="services-header" class="max-w-2xl mb-14">
+      <span id="services-index-badge" class="neu-index mb-5">03</span>
+      <p id="services-kicker" class="kicker mt-5 mb-4">What we do</p>
+      <h2 id="services-heading" class="text-3xl lg:text-4xl font-semibold text-ink leading-tight" data-reveal>Expertise across the full project lifecycle</h2>
+      <p id="services-subheading" class="text-ink-muted text-lg mt-5" data-reveal>From concept to completion, we provide the technical and commercial expertise your project needs.</p>
+    </header>
+
+    <div id="services-reveal-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8" data-reveal-group="130">
+      {% for service in featured_services %}
+      <a id="service-link-{{ forloop.counter }}" href="{{ service.get_absolute_url }}" class="card card-interactive group p-8 flex flex-col" data-reveal>
+        <div class="flex items-center justify-between mb-8">
+          <span id="service-badge-{{ forloop.counter }}" class="neu-icon neu-icon-inset text-sm font-semibold">{{ forloop.counter|stringformat:"02d" }}</span>
+          <svg class="w-5 h-5 text-ink-subtle group-hover:text-brand-strong group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6l6 6-6 6"/></svg>
+        </div>
+        <h3 id="service-name-{{ forloop.counter }}" class="font-semibold text-ink text-xl mb-3 group-hover:text-brand-strong transition-colors">{{ service.name }}</h3>
+        <p id="service-desc-{{ forloop.counter }}" class="text-ink-muted text-sm leading-relaxed flex-1">{{ service.short_desc }}</p>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div id="services-footer-cta" class="mt-12" data-reveal>
+      <a id="services-view-all-link" href="{% url 'services:landing' %}" class="link-underline text-brand-strong font-semibold text-sm uppercase tracking-wide">View all services →</a>
+    </div>
+
+  </div>
+</section>
+{% endif %}
+
+{# ==================== 04 · WHO WE WORK WITH ==================== #}
+<section id="stakeholders-section" class="bg-surface relative py-16 lg:py-24 border-b border-line" aria-label="Who we work with">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <header id="stakeholders-header" class="max-w-2xl mb-14">
+      <span id="stakeholders-index-badge" class="neu-index mb-5">04</span>
+      <p id="stakeholders-kicker" class="kicker mt-5 mb-4">Who we work with</p>
+      <h2 id="stakeholders-heading" class="text-3xl lg:text-4xl font-semibold text-ink leading-tight">Tailored support for every stakeholder</h2>
+    </header>
+
+    <div id="stakeholders-reveal-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-8" data-reveal-group="130">
+      
+      <div id="stakeholder-card-clients" class="card p-8 flex flex-col" data-reveal>
+        <span class="neu-icon mb-6">
+          <svg class="w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M6 21V9l6-4 6 4v12"/></svg>
+        </span>
+        <h3 id="stakeholder-heading-clients" class="font-semibold text-ink text-2xl mb-3">For Clients</h3>
+        <p id="stakeholder-text-clients" class="text-ink-muted text-sm leading-relaxed flex-1 mb-5">Employer agent, bid administration, contractor procurement, contract management, and regular project reporting.</p>
+        <a id="stakeholder-link-clients" href="{% url 'services:landing' %}?buyer=client" class="link-underline text-brand-strong text-xs font-semibold uppercase tracking-wide">Client services →</a>
+      </div>
+
+      <div id="stakeholder-card-contractors" class="card p-8 flex flex-col" data-reveal>
+        <span class="neu-icon mb-6">
+          <svg class="w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4l6 2v12l-6-2-6 2V6l6-2zM11 4v12"/></svg>
+        </span>
+        <h3 id="stakeholder-heading-contractors" class="font-semibold text-ink text-2xl mb-3">For Contractors</h3>
+        <p id="stakeholder-text-contractors" class="text-ink-muted text-sm leading-relaxed flex-1 mb-5">Full quantity surveying, tender preparation, BIM modelling, financial reporting, and contract &amp; legal compliance.</p>
+        <a id="stakeholder-link-contractors" href="{% url 'services:landing' %}?buyer=contractor" class="link-underline text-brand-strong text-xs font-semibold uppercase tracking-wide">Contractor services →</a>
+      </div>
+
+      <div id="stakeholder-card-consultancies" class="card p-8 flex flex-col" data-reveal>
+        <span class="neu-icon mb-6">
+          <svg class="w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16M4 20V8l8-4 8 4v12M9 20v-6h6v6"/></svg>
+        </span>
+        <h3 id="stakeholder-heading-consultancies" class="font-semibold text-ink text-2xl mb-3">For Consultancies</h3>
+        <p id="stakeholder-text-consultancies" class="text-ink-muted text-sm leading-relaxed flex-1 mb-5">Proposal development, architectural drawings, structural design &amp; detailing, interior design, and 3D visualisation.</p>
+        <a id="stakeholder-link-consultancies" href="{% url 'services:landing' %}?buyer=consultancy" class="link-underline text-brand-strong text-xs font-semibold uppercase tracking-wide">Consultancy services →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# ==================== 05 · SECTORS ==================== #}
+<section id="sectors-section" class="bg-surface relative py-16 lg:py-24 border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <header id="sectors-header" class="mb-14 max-w-2xl">
+      <span id="sectors-index-badge" class="neu-index mb-5">05</span>
+      <p id="sectors-kicker" class="kicker mt-5 mb-4">Sectors</p>
+      <h2 id="sectors-heading" class="text-3xl lg:text-4xl font-semibold text-ink leading-tight">Where our drawings become ground</h2>
+    </header>
+
+    <div id="sectors-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <div id="sector-card-infra" class="card p-10 lg:p-12 min-h-[300px] flex flex-col justify-between" data-reveal="left">
+        <div id="sector-hud-1" class="flex items-center justify-between">
+          <span class="neu-icon neu-icon-inset text-sm font-semibold">01</span>
+          <span class="text-6xl font-semibold text-ink/10">01</span>
+        </div>
+        <div id="sector-copy-1" class="mt-8">
+          <h3 id="sector-title-infra" class="text-3xl font-semibold text-ink mb-3">Infrastructure</h3>
+          <p id="sector-desc-infra" class="text-ink-muted max-w-md">Roads, utilities, and civils — delivering the backbone projects communities rely on.</p>
+        </div>
+      </div>
+
+      <div id="sector-card-const" class="card p-10 lg:p-12 min-h-[300px] flex flex-col justify-between" data-reveal="right">
+        <div id="sector-hud-2" class="flex items-center justify-between">
+          <span class="neu-icon neu-icon-inset text-sm font-semibold">02</span>
+          <span class="text-6xl font-semibold text-ink/10">02</span>
+        </div>
+        <div id="sector-copy-2" class="mt-8">
+          <h3 id="sector-title-const" class="text-3xl font-semibold text-ink mb-3">Construction</h3>
+          <p id="sector-desc-const" class="text-ink-muted max-w-md">Residential, commercial, and mixed-use builds — from first sketch to final handover.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# ==================== 06 · SELECTED WORK ==================== #}
+{% if featured_projects %}
+<section id="portfolio-list-section" class="bg-surface relative py-16 lg:py-24 border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <header id="portfolio-header" class="flex flex-wrap items-end justify-between gap-6 mb-14">
+      <div class="max-w-2xl">
+        <span id="portfolio-index-badge" class="neu-index mb-5">06</span>
+        <p id="portfolio-kicker" class="kicker mt-5 mb-4">Selected work</p>
+        <h2 id="portfolio-heading" class="text-3xl lg:text-4xl font-semibold text-ink leading-tight">Recent projects, on record</h2>
+      </div>
+      <a id="portfolio-view-all-desktop" href="{% url 'portfolio:list' %}" class="link-underline text-brand-strong font-semibold text-sm uppercase tracking-wide hidden sm:block">View all →</a>
+    </header>
+
+    <div id="portfolio-reveal-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-reveal-group="110">
+      {% for project in featured_projects %}
+      <a id="portfolio-link-{{ forloop.counter }}" href="{{ project.get_absolute_url }}" class="card card-interactive group block overflow-hidden" data-reveal>
+        <div id="portfolio-aspect-{{ forloop.counter }}" class="aspect-[16/10] overflow-hidden relative">
+          {% if project.cover_image %}
+          <img src="{{ project.cover_image.url }}" alt="{{ project.title }}"
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+               loading="lazy" width="400" height="250">
+          {% else %}
+          <div class="w-full h-full neu-inset flex items-center justify-center text-ink-subtle text-xs uppercase tracking-wide">No image</div>
+          {% endif %}
+          <span class="absolute top-3 left-3 bg-surface/90 text-ink text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded">
+            {{ project.year }}
+          </span>
+        </div>
+        <div id="portfolio-body-{{ forloop.counter }}" class="p-5">
+          <p id="portfolio-tag-{{ forloop.counter }}" class="text-brand-strong text-[10px] font-mono uppercase tracking-widest mb-1.5">{{ project.get_sector_display }}</p>
+          <h3 id="portfolio-title-{{ forloop.counter }}" class="font-bold text-ink text-sm leading-snug group-hover:text-brand-strong transition-colors">{{ project.title }}</h3>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    <div id="portfolio-mobile-footer" class="mt-10 sm:hidden">
+      <a id="portfolio-view-all-mobile" href="{% url 'portfolio:list' %}" class="link-underline text-brand-strong font-semibold text-sm uppercase tracking-wide">View all projects →</a>
+    </div>
+
+  </div>
+</section>
+{% endif %}
+
+{# ==================== 07 · CLIENT VOICES ==================== #}
+{% if featured_testimonials %}
+<section id="testimonials-section" class="bg-surface relative py-16 lg:py-24 border-b border-line">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid xl:grid-cols-2">
+
+      {# ---- LEFT: intro + social proof ---- #}
+      <div id="testimonials-intro-col" class="flex flex-col justify-center gap-8 xl:pr-16" data-reveal>
+        <div>
+          <span id="testimonials-index-badge" class="neu-index mb-5">07</span>
+          <p id="testimonials-kicker" class="kicker mt-5 mb-4">Client voices</p>
+          <h2 id="testimonials-heading" class="text-3xl lg:text-4xl xl:text-5xl font-semibold text-ink leading-tight">
+            On the record,<br>from the people<br>who hired us
+          </h2>
+        </div>
+        <p id="testimonials-intro-text" class="text-ink-muted text-lg leading-relaxed max-w-md">
+          The words belong to genuine clients whose projects we've delivered. Fully audited reviews highlighting our exact project execution performance.
+        </p>
+
+        {# Interactive Switcher Controls to Toggle Testimonials in the view #}
+        <div id="testimonial-interactive-tabs" class="space-y-2 max-w-sm">
+          <label class="block text-xs font-mono uppercase tracking-widest text-ink-subtle mb-3">SELECT CLIENT REPORT</label>
+          {% for t in featured_testimonials %}
+          <button id="btn-testimonial-tab-{{ forloop.counter }}" onclick="switchTestimonial({{ forloop.index }})" class="w-full text-left p-3.5 rounded-xl transition-all flex items-center gap-3 border {% if forloop.first %}border-brand bg-brand-soft/50 text-brand-strong font-bold shadow-sm{% else %}border-line bg-surface-raised text-ink-muted hover:border-brand/30 hover:text-ink{% endif %}" aria-label="View testimonial from {{ t.client_name }}">
+            <span class="w-8 h-8 rounded-full bg-surface-sunken border border-line flex items-center justify-center text-xs font-mono font-bold text-ink shrink-0">{{ t.initials }}</span>
+            <span class="text-xs">{{ t.client_name }}</span>
+          </button>
+          {% endfor %}
+        </div>
+
+        <div id="testimonials-meta-row" class="flex items-center gap-4 border-t border-line pt-6">
+          <p class="text-ink-subtle text-sm">
+            <span id="testimonials-count-num" class="font-bold text-ink">{{ testimonial_count }}</span>
+            client{{ testimonial_count|pluralize }} on record, and counting
+          </p>
+        </div>
+      </div>
+
+      {# ---- RIGHT: Testimonial Displays ---- #}
+      <div id="testimonials-cards-col" class="mt-12 xl:mt-0 xl:border-l xl:border-line xl:pl-16" data-reveal="right">
+        <div id="testimonials-recessed-deck" class="border border-line/60 bg-surface-sunken rounded-3xl p-5 sm:p-8 h-full flex flex-col justify-center relative min-h-[340px] shadow-xs overflow-hidden">
+          
+          {% for t in featured_testimonials %}
+          <figure id="testimonial-figure-{{ forloop.index }}" class="card bg-surface-raised p-6 sm:p-8 shadow-md border border-line transition-all duration-500 {% if forloop.first %}opacity-100 scale-100 relative z-10{% else %}opacity-0 scale-95 absolute inset-5 sm:inset-8 pointer-events-none{% endif %}">
+            {% if t.headline %}<p class="font-semibold text-ink text-lg mb-3">{{ t.headline }}</p>{% endif %}
+            <blockquote class="text-ink-muted leading-relaxed mb-6">"{{ t.quote }}"</blockquote>
+            <figcaption class="flex items-center gap-3 border-t border-line pt-4">
+              <span class="w-11 h-11 shrink-0 rounded-full overflow-hidden bg-surface-sunken border border-line flex items-center justify-center text-xs font-semibold text-brand-strong">
+                {% if t.avatar %}
+                <img src="{{ t.avatar_thumb.url }}" alt="{{ t.client_name }}" class="w-full h-full object-cover" loading="lazy">
+                {% else %}{{ t.initials }}{% endif %}
+              </span>
+              <span class="min-w-0">
+                <span class="block font-semibold text-ink text-sm leading-tight">{{ t.client_name }}</span>
+                <span class="block text-ink-subtle text-xs mt-0.5">{{ t.client_title }}</span>
+              </span>
+            </figcaption>
+          </figure>
+          {% endfor %}
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ==================== 08 · CTA ==================== #}
+<section id="cta-section" class="bg-surface relative py-16 lg:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div id="cta-inner-card" class="card neu-lg p-10 lg:p-16 text-center" data-reveal="scale">
+      <div id="cta-icon-row" class="flex justify-center mb-6">
+        <span class="neu-icon" style="width:3.5rem;height:3.5rem;">
+          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8m-4-4v8M12 3a9 9 0 100 18 9 9 0 000-18z"/></svg>
+        </span>
+      </div>
+      <h2 id="cta-heading" class="text-3xl lg:text-5xl font-semibold text-ink mb-6 leading-tight">Ready to set out<br>your next project?</h2>
+      <p id="cta-description" class="text-ink-muted mb-10 text-lg max-w-xl mx-auto">Let's discuss your requirements and how we can support your build — from concept through to completion.</p>
+      <a id="cta-button-link" href="{% url 'inquiries:contact' %}" class="btn btn-primary !px-8 !py-4">Book a consultation</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script id="home-interactive-script">
+  // ==========================================
+  // 1. BIM WIREFRAME & LAYERS SWAP
+  // ==========================================
+  const layers = {
+    bim: {
+      svgId: 'svg-layer-bim',
+      btnId: 'btn-layer-bim',
+      numId: 'layer-num-bim',
+      deliverable: '3D CAD Wireframe Schema'
+    },
+    qs: {
+      svgId: 'svg-layer-qs',
+      btnId: 'btn-layer-qs',
+      numId: 'layer-num-qs',
+      deliverable: 'Real-Time Bill of Quantities'
+    },
+    timeline: {
+      svgId: 'svg-layer-timeline',
+      btnId: 'btn-layer-timeline',
+      numId: 'layer-num-timeline',
+      deliverable: 'RICS Delivery Timeline Path'
+    }
+  };
+
+  function switchBimLayer(activeKey) {
+    Object.keys(layers).forEach((key) => {
+      const config = layers[key];
+      const svg = document.getElementById(config.svgId);
+      const btn = document.getElementById(config.btnId);
+      const num = document.getElementById(config.numId);
+      
+      if (key === activeKey) {
+        // Activate
+        if (svg) {
+          svg.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
+          svg.classList.add('opacity-100', 'scale-100');
+        }
+        if (btn) {
+          btn.className = "w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-brand bg-brand-soft/50 text-brand-strong font-semibold shadow-sm";
+        }
+        if (num) {
+          num.className = "w-8 h-8 rounded-full bg-brand text-on-brand flex items-center justify-center text-xs font-mono font-bold shadow-sm";
+        }
+        
+        // Update HUD
+        const deliverableSpan = document.getElementById('span-active-deliverable');
+        if (deliverableSpan) {
+          deliverableSpan.innerText = config.deliverable;
+        }
+        
+        const statusSpan = document.getElementById('hud-status-active');
+        if (statusSpan) {
+          statusSpan.innerText = `SYS: MODEL_LOADED // LAYER_${key.toUpperCase()}_ENGAGED`;
+        }
+      } else {
+        // Deactivate
+        if (svg) {
+          svg.classList.remove('opacity-100', 'scale-100');
+          svg.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
+        }
+        if (btn) {
+          btn.className = "w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs";
+        }
+        if (num) {
+          num.className = "w-8 h-8 rounded-full bg-surface-sunken flex items-center justify-center text-xs font-mono text-ink-subtle border border-line/50";
+        }
+      }
+    });
+  }
+
+  // Mouse move tracker for blueprint workspace HUD coordinate simulation
+  const board = document.getElementById('canvas-drawing-board');
+  if (board) {
+    board.addEventListener('mousemove', (e) => {
+      const rect = board.getBoundingClientRect();
+      const x = (e.clientX - rect.left).toFixed(2);
+      const y = (e.clientY - rect.top).toFixed(2);
+      const coords = document.getElementById('hud-coordinates');
+      if (coords) {
+        coords.innerText = `X: ${x} / Y: ${y}`;
+      }
+    });
+  }
+
+  // ==========================================
+  // 2. PROJECT FEE & SCOPE ESTIMATOR
+  // ==========================================
+  let activeSector = 'infra';
+  
+  const sectorWeights = {
+    infra: { feePercent: 0.012, label: 'Infrastructure & Civils', baseMonths: 18 },
+    comm: { feePercent: 0.018, label: 'Commercial Developments', baseMonths: 14 },
+    res: { feePercent: 0.022, label: 'High-End Residential', baseMonths: 10 }
+  };
+
+  const sliderScales = [
+    500000, 1000000, 2500000, 5000000, 7500000, 
+    10000000, 15000000, 20000000, 35000000, 50000000
+  ];
+
+  function setEstimatorSector(sector) {
+    activeSector = sector;
+    
+    // Update active button classes
+    ['infra', 'comm', 'res'].forEach((sec) => {
+      const btn = document.getElementById(`btn-sec-${sec}`);
+      if (sec === sector) {
+        btn.className = "py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-on-brand bg-brand border-brand shadow-sm";
+      } else {
+        btn.className = "py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink";
+      }
+    });
+
+    updateEstimator();
+  }
+
+  function updateEstimator() {
+    const slider = document.getElementById('slider-budget');
+    const index = parseInt(slider.value, 10) - 1;
+    const rawBudget = sliderScales[index];
+    
+    // Format slider display
+    const formattedBudget = rawBudget >= 1000000 
+      ? `£${(rawBudget / 1000000).toFixed(1).replace('.0', '')}M` 
+      : `£${(rawBudget / 1000).toFixed(0)}k`;
+    
+    document.getElementById('slider-budget-value').innerText = formattedBudget;
+ 
+    // Check service modifiers
+    const checks = {
+      qs: document.getElementById('check-service-qs').checked,
+      bim: document.getElementById('check-service-bim').checked,
+      pm: document.getElementById('check-service-pm').checked,
+      proc: document.getElementById('check-service-proc').checked
+    };
+
+    // Update labels border highlights based on checkbox state
+    Object.keys(checks).forEach((srv) => {
+      const lbl = document.getElementById(`lbl-check-${srv}`);
+      if (lbl) {
+        if (checks[srv]) {
+          lbl.className = "flex items-center gap-3 p-3.5 rounded-xl border border-brand bg-brand-soft/50 text-brand-strong cursor-pointer shadow-sm transition-all";
+        } else {
+          lbl.className = "flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all";
+        }
+      }
+    });
+
+    // Calculate modifier count (at least 1 for base calculations)
+    const activeCount = Object.values(checks).filter(Boolean).length;
+    
+    // Fee logic
+    const config = sectorWeights[activeSector];
+    let calculatedRate = config.feePercent;
+    
+    // Adjust rate based on service configuration complexity
+    calculatedRate = calculatedRate * (0.4 + (0.15 * activeCount));
+    
+    const feeMid = rawBudget * calculatedRate;
+    const feeMin = feeMid * 0.85;
+    const feeMax = feeMid * 1.15;
+
+    // Helper to format currency
+    const formatCurrency = (val) => {
+      if (val >= 1000000) return `£${(val / 1000000).toFixed(2)}M`;
+      if (val >= 1000) return `£${(val / 1000).toFixed(0)}k`;
+      return `£${val.toFixed(0)}`;
+    };
+
+    const feeString = activeCount === 0 
+      ? 'Select services' 
+      : `${formatCurrency(feeMin)} - ${formatCurrency(feeMax)}`;
+
+    document.getElementById('output-fee-range').innerText = feeString;
+
+    // Timeline duration logic
+    let estMonths = config.baseMonths;
+    if (index > 4) estMonths += Math.floor((index - 4) * 1.5);
+    if (checks.pm) estMonths = Math.round(estMonths * 1.1);
+    
+    const durationString = activeCount === 0 
+      ? 'Select services' 
+      : `${Math.round(estMonths * 0.9)} - ${Math.round(estMonths * 1.15)} Mos`;
+    document.getElementById('output-timeline-duration').innerText = durationString;
+
+    // Metadata description
+    document.getElementById('output-meta-scope').innerText = config.label;
+  }
+
+  // Copy scope blueprint statement to clipboard with visual microfeedback
+  function copyProjectScope() {
+    const slider = document.getElementById('slider-budget');
+    const index = parseInt(slider.value, 10) - 1;
+    const rawBudget = sliderScales[index];
+    const budgetStr = rawBudget >= 1000000 ? `£${rawBudget / 1000000}M` : `£${rawBudget / 1000}k`;
+
+    const config = sectorWeights[activeSector];
+    
+    const servicesChecked = [];
+    if (document.getElementById('check-service-qs').checked) servicesChecked.push('Quantity Surveying & Cost Audits');
+    if (document.getElementById('check-service-bim').checked) servicesChecked.push('BIM & 3D Coordination');
+    if (document.getElementById('check-service-pm').checked) servicesChecked.push('Project Management & Employer Agent');
+    if (document.getElementById('check-service-proc').checked) servicesChecked.push('Tendering & Procurement Administration');
+
+    const feeText = document.getElementById('output-fee-range').innerText;
+    const durationText = document.getElementById('output-timeline-duration').innerText;
+
+    const scopeBody = `--- PIONEER CONSULTANTS SCOPE BLUEPRINT ---
+Sector Focus: ${config.label}
+Anticipated Construction Budget: ${budgetStr}
+Professional Services Configured:
+${servicesChecked.map(s => ` - [x] ${s}`).join('\n') || ' - None selected'}
+
+Estimated Consultancy Fee Bracket: ${feeText}
+Target Project Cycle Duration: ${durationText}
+Timestamp: ${new Date().toLocaleDateString()}
+------------------------------------------
+Please share this blueprint with your team or submit it directly during our consultation.`;
+
+    navigator.clipboard.writeText(scopeBody).then(() => {
+      const btnText = document.getElementById('btn-copy-text');
+      const btnIcon = document.getElementById('svg-copy-icon');
+      
+      if (btnText && btnIcon) {
+        btnText.innerText = "Blueprint Copied!";
+        btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />`;
+        
+        setTimeout(() => {
+          btnText.innerText = "Copy Scope Blueprint";
+          btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />`;
+        }, 2500);
+      }
+    });
+  }
+
+  // ==========================================
+  // 3. INTERACTIVE CLIENT VOICES CAROUSEL
+  // ==========================================
+  function switchTestimonial(index) {
+    const tabsCount = document.querySelectorAll('[id^="btn-testimonial-tab-"]').length;
+    
+    for (let i = 1; i <= tabsCount; i++) {
+      const btn = document.getElementById(`btn-testimonial-tab-${i}`);
+      const figure = document.getElementById(`testimonial-figure-${i}`);
+      
+      if (i === index) {
+        // Activate button
+        if (btn) {
+          btn.className = "w-full text-left p-3.5 rounded-xl transition-all flex items-center gap-3 border border-brand bg-brand-soft/50 text-brand-strong font-bold shadow-sm";
+        }
+        // Activate figure
+        if (figure) {
+          figure.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
+          figure.classList.add('opacity-100', 'scale-100', 'relative', 'z-10');
+        }
+      } else {
+        // Deactivate button
+        if (btn) {
+          btn.className = "w-full text-left p-3.5 rounded-xl transition-all flex items-center gap-3 border border-line bg-surface-raised text-ink-muted hover:border-brand/30 hover:text-ink";
+        }
+        // Deactivate figure
+        if (figure) {
+          figure.classList.remove('opacity-100', 'scale-100', 'relative', 'z-10');
+          figure.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
+        }
+      }
+    }
+  }
+
+  // Bootstrap initial states
+  document.addEventListener('DOMContentLoaded', () => {
+    updateEstimator();
+  });
+</script>
+{% endblock %}

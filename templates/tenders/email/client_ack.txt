@@ -1,0 +1,12 @@
+Dear {{ tender.client_name }},
+
+Thank you for the opportunity to work on "{{ tender.title }}".
+
+Our team has registered your project and is already reviewing the details. We
+take every enquiry seriously and will be in touch shortly with next steps.
+
+If there's anything you'd like us to know in the meantime, simply reply to this
+email — a real person will read it.
+
+Warm regards,
+London Summit Consultancy

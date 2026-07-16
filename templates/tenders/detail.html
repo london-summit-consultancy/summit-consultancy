@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block title %}{{ tender.reference }} · {{ tender.title }} | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+{% block canonical %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <a href="{% url 'tenders:list' %}" class="text-sm text-ink-muted hover:text-brand-strong">← Back to pipeline</a>
+
+  <div class="flex flex-wrap items-start justify-between gap-4 mt-4 mb-8">
+    <div>
+      <span class="font-mono text-sm font-semibold text-brand-strong">{{ tender.reference }}</span>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold mt-1">{{ tender.title }}</h1>
+      <p class="text-ink-muted mt-2">{{ tender.client_name }}{% if tender.client_email %} · {{ tender.client_email }}{% endif %}</p>
+    </div>
+    <a href="{% url 'tenders:update' tender.public_id %}" class="btn btn-dark">Edit</a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {# Left: details + description + documents #}
+    <div class="lg:col-span-2 space-y-8">
+      <div class="card p-6">
+        <dl class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+          <div><dt class="text-ink-subtle text-xs uppercase tracking-wider">Sector</dt><dd class="mt-1 capitalize">{{ tender.get_sector_display }}</dd></div>
+          <div><dt class="text-ink-subtle text-xs uppercase tracking-wider">Deadline</dt>
+            <dd class="mt-1 {% if tender.is_overdue %}text-danger font-semibold{% endif %}">{{ tender.deadline|date:"d M Y"|default:"—" }}</dd></div>
+          <div><dt class="text-ink-subtle text-xs uppercase tracking-wider">Est. Value</dt>
+            <dd class="mt-1 font-mono">{% if tender.estimated_value %}£{{ tender.estimated_value|floatformat:0|intcomma }}{% else %}—{% endif %}</dd></div>
+        </dl>
+        {% if tender.description %}
+          <div class="rich-text mt-6 pt-6 border-t border-line">{{ tender.description|safe }}</div>
+        {% endif %}
+        {% if tender.notes %}
+          <div class="mt-6 pt-6 border-t border-line">
+            <h3 class="text-xs uppercase tracking-wider text-ink-subtle mb-2">Internal Notes</h3>
+            <div class="rich-text">{{ tender.notes|safe }}</div>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Documents #}
+      <div class="card p-6">
+        <h2 class="font-display text-xl font-bold mb-4">Documents</h2>
+
+        <h3 class="text-xs uppercase tracking-wider text-ink-subtle mb-2">Current Revisions</h3>
+        <div id="current-docs" class="space-y-2">
+          {% for document in current_documents %}
+            {% include "tenders/partials/_document_row.html" %}
+          {% empty %}
+            <p id="no-current-docs" class="text-sm text-ink-subtle py-2">No current documents.</p>
+          {% endfor %}
+        </div>
+
+        {% if archived_documents %}
+          <details class="mt-6">
+            <summary class="cursor-pointer text-xs uppercase tracking-wider text-ink-subtle">Archived Revisions ({{ archived_documents|length }})</summary>
+            <div class="space-y-2 mt-3">
+              {% for document in archived_documents %}
+                {% include "tenders/partials/_document_row.html" %}
+              {% endfor %}
+            </div>
+          </details>
+        {% endif %}
+
+        {# Upload form — multipart HTMX; Celery does the R2 write off-request #}
+        <form class="mt-6 pt-6 border-t border-line grid sm:grid-cols-[1fr_auto_auto] gap-3 items-end"
+              hx-post="{% url 'tenders:document_upload' tender.public_id %}"
+              hx-encoding="multipart/form-data"
+              hx-target="#current-docs" hx-swap="afterbegin"
+              data-reset-on-success>
+          <div>
+            <label class="field-label" for="doc-title">Document title</label>
+            <input class="field-input" type="text" id="doc-title" name="title" required>
+          </div>
+          <div>
+            <label class="field-label" for="doc-rev">Revision</label>
+            <input class="field-input !w-28" type="text" id="doc-rev" name="revision" placeholder="Rev A" required>
+          </div>
+          <div>
+            <input class="field-input" type="file" id="doc-file" name="file" required>
+          </div>
+          <div class="sm:col-span-3">
+            <button type="submit" class="btn btn-primary">
+              Upload
+              <span class="htmx-indicator">…</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+      {# Discussion (live via Ably) #}
+      <div class="card p-6" id="chat-panel"
+           data-tender-channel="{{ tender_channel }}"
+           data-token-url="{% url 'tenders:ably_token' %}"
+           data-realtime="{{ realtime_enabled|yesno:'1,0' }}">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-display text-xl font-bold">Discussion</h2>
+          {% if realtime_enabled %}
+            <span class="text-xs text-ink-subtle inline-flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-positive" data-chat-status></span> Live
+            </span>
+          {% endif %}
+        </div>
+        <div id="chat-log" class="space-y-4 max-h-96 overflow-y-auto mb-4">
+          {% for message in messages_list %}
+            {% include "tenders/partials/_message.html" with message=message own=False %}
+          {% empty %}
+            <p class="text-sm text-ink-subtle" data-chat-empty>No messages yet. Start the conversation.</p>
+          {% endfor %}
+        </div>
+        <form hx-post="{% url 'tenders:message_create' tender.public_id %}"
+              hx-target="#chat-log" hx-swap="beforeend"
+              data-reset-on-success class="flex gap-2">
+          <input type="text" name="body" class="field-input" placeholder="Write a message…"
+                 autocomplete="off" required maxlength="4000">
+          <button type="submit" class="btn btn-primary shrink-0">Send</button>
+        </form>
+      </div>
+
+    {# Right: status + team + AI #}
+    <div class="space-y-8">
+      <div class="card p-6">
+        <h2 class="font-display text-xl font-bold mb-4">Status</h2>
+        {% include "tenders/partials/_status_block.html" %}
+      </div>
+
+      <div class="card p-6">
+        <h2 class="font-display text-xl font-bold mb-4">Assigned Team</h2>
+        <ul class="space-y-3">
+          {% for member in tender.assigned_to.all %}
+            <li class="flex items-center gap-3">
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand text-on-brand text-sm font-semibold">
+                {{ member.get_full_name|slice:":1"|upper }}
+              </span>
+              <span class="text-sm">{{ member.get_full_name }}</span>
+            </li>
+          {% empty %}<li class="text-sm text-ink-subtle">Nobody assigned.</li>{% endfor %}
+        </ul>
+        <p class="text-xs text-ink-subtle mt-5 pt-5 border-t border-line">
+          Created {{ tender.created_at|date:"d M Y" }}{% if tender.created_by %} by {{ tender.created_by.get_full_name }}{% endif %}.
+        </p>
+      </div>
+
+      {# AI assistant (local DeepSeek — on-prem, private) #}
+      <div class="card p-6" id="ai-panel"
+           data-ask-url="{% url 'tenders:ai_ask' tender.public_id %}"
+           data-email-url="{% url 'tenders:ai_draft_email' tender.public_id %}">
+        <h2 class="font-display text-xl font-bold mb-1">AI Assistant</h2>
+        <p class="text-xs text-ink-subtle mb-4">On-prem DeepSeek · private · drafts for staff to review.</p>
+        {% if ai_enabled %}
+          <label class="field-label" for="ai-question">Ask about this tender</label>
+          <div class="flex gap-2">
+            <input type="text" id="ai-question" class="field-input" placeholder="e.g. What's the deadline?">
+            <button type="button" class="btn btn-dark shrink-0" data-ai-ask>Ask</button>
+          </div>
+          <button type="button" class="btn btn-primary w-full mt-3" data-ai-draft-email>
+            Draft a client email
+          </button>
+          <div data-ai-output class="hidden mt-4 rounded-lg border border-line bg-surface-sunken p-3 text-sm whitespace-pre-line"></div>
+          <p data-ai-error class="hidden mt-2 text-xs text-danger"></p>
+        {% else %}
+          <p class="text-sm text-ink-subtle">Set <code class="font-mono">DEEPSEEK_BASE_URL</code> to enable on-prem AI drafting.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if realtime_enabled %}<script src="{% static 'js/ably.min.js' %}" defer></script>{% endif %}
+<script src="{% static 'js/tenders.js' %}" defer></script>
+{% endblock %}

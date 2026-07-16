@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy | {{ site.brand_name|default:"London Summit Consultancy" }}{% endblock %}
+
+{% block content %}
+{# ==================== PAGE HERO ==================== #}
+<section class="bg-surface">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
+    <p class="kicker mb-5" data-reveal>Legal</p>
+    <h1 class="text-4xl lg:text-5xl font-semibold text-ink" data-reveal>Privacy Policy</h1>
+    <p class="text-ink-muted mt-3" data-reveal>Your privacy matters to us.</p>
+  </div>
+</section>
+
+{# ==================== CONTENT ==================== #}
+<section class="bg-surface">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 lg:pb-24">
+    <div class="card p-8 lg:p-10 rich-text" data-reveal>
+      <p class="lead">London Summit Consultancy Limited respects your privacy and is committed to protecting your personal information.</p>
+
+      <h2>Information We Collect</h2>
+      <p>When you submit an enquiry through our contact form, we collect: your name, email address, phone number (optional), company name (optional), and a description of your project.</p>
+
+      <h2>How We Use Your Information</h2>
+      <p>We use the information you provide solely to respond to your enquiry and to provide the services you request. We do not sell, trade, or otherwise transfer your personal information to third parties.</p>
+
+      <h2>Data Retention</h2>
+      <p>Enquiry data is retained for as long as necessary to fulfil your request and for up to 3 years thereafter for our legitimate business records.</p>
+
+      <h2>Cookies</h2>
+      <p>This website uses only essential session cookies required for secure form submission. No third-party tracking cookies are used.</p>
+
+      <h2>Your Rights</h2>
+      <p>You have the right to request access to, correction of, or deletion of your personal data. To exercise these rights, contact us at <a href="mailto:{{ site.email }}">{{ site.email }}</a>.</p>
+
+      <h2>Contact</h2>
+      <p>For any privacy-related questions, please contact us at <a href="mailto:{{ site.email }}">{{ site.email }}</a>.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
