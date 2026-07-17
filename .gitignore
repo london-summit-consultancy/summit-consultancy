@@ -19,3 +19,5 @@ static/css/main.css
 # on demand via os.makedirs(exist_ok=True) in apps/tenders/views.py, so it
 # doesn't need to exist in a fresh checkout.
 tender_staging/
+# Neon CLI local init marker — tooling cruft, not project source.
+.neon

@@ -223,13 +223,18 @@ LOGIN_URL = "/internal/login/"
 LOGIN_REDIRECT_URL = "/internal/tenders/"  # staff destination; public → "/" via adapter
 LOGOUT_REDIRECT_URL = "/"
 
-# Account: email is the identifier, no usernames. Signup is open; every new
-# account must confirm its email (verification goes through the configured email
-# backend — SMTP2GO in production, console in local dev) before it can log in.
+# Account: email is the identifier, no usernames. Signup is open and users can
+# log in immediately; a verification email is still sent (asynchronously, via
+# PublicAccountAdapter.send_mail -> Celery) but is not required to sign in.
+# "optional" rather than "mandatory" because public accounts are is_staff=False
+# and unlock nothing sensitive (the tender tool is gated on is_staff), so gating
+# login on a delivered email only creates a dead-end when the mail backend isn't
+# configured. Revisit to "mandatory" once outbound email is provisioned and
+# verified addresses are actually required.
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[London Summit] "
 ACCOUNT_ADAPTER = "apps.core.adapters.PublicAccountAdapter"
 
