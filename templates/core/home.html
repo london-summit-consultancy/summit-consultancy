@@ -60,21 +60,21 @@
 
           {# Interactive Switches #}
           <div id="workspace-toggle-pills" class="space-y-3">
-            <button id="btn-layer-bim" onclick="switchBimLayer('bim')" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-brand bg-brand-soft/50 text-brand-strong font-semibold shadow-sm" aria-label="Switch to BIM structural layer">
+            <button id="btn-layer-bim" type="button" data-bim-layer="bim" aria-pressed="true" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-brand bg-brand-soft/50 text-brand-strong font-semibold shadow-sm" aria-label="Switch to BIM structural layer">
               <span id="layer-num-bim" class="w-8 h-8 rounded-full bg-brand text-on-brand flex items-center justify-center text-xs font-mono font-bold shadow-sm">01</span>
               <div>
                 <span class="block text-sm">BIM & Structural Wireframe</span>
                 <span class="block text-xs text-ink-subtle font-normal">Interactive structural layout detailing grid nodes & dimensions.</span>
               </div>
             </button>
-            <button id="btn-layer-qs" onclick="switchBimLayer('qs')" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs" aria-label="Switch to QS financial layer">
+            <button id="btn-layer-qs" type="button" data-bim-layer="qs" aria-pressed="false" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs" aria-label="Switch to QS financial layer">
               <span id="layer-num-qs" class="w-8 h-8 rounded-full bg-surface-sunken flex items-center justify-center text-xs font-mono text-ink-subtle border border-line/50">02</span>
               <div>
                 <span class="block text-sm text-ink">Quantity Surveying & Material Audits</span>
                 <span class="block text-xs text-ink-subtle font-normal">Real-time material takeoff estimates and contingency metrics.</span>
               </div>
             </button>
-            <button id="btn-layer-timeline" onclick="switchBimLayer('timeline')" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs" aria-label="Switch to project timeline layer">
+            <button id="btn-layer-timeline" type="button" data-bim-layer="timeline" aria-pressed="false" class="w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs" aria-label="Switch to project timeline layer">
               <span id="layer-num-timeline" class="w-8 h-8 rounded-full bg-surface-sunken flex items-center justify-center text-xs font-mono text-ink-subtle border border-line/50">03</span>
               <div>
                 <span class="block text-sm text-ink">Critical Path & Milestone Progression</span>
@@ -210,19 +210,24 @@
 
       {# Calculator Card Interactive Workspace #}
       <div id="estimator-card-col" class="lg:col-span-7" data-reveal="right">
-        <div id="estimator-interactive-card" class="card p-6 sm:p-10 space-y-8">
+        {% comment %}
+          data-brand feeds the copied scope blueprint's header (see
+          static/js/home-interactive.js) — sourced from SiteSettings so it
+          tracks the brand name instead of being hardcoded in the script.
+        {% endcomment %}
+        <div id="estimator-interactive-card" data-brand="{{ site.brand_name|default:'London Summit Consultancy' }}" class="card p-6 sm:p-10 space-y-8">
           
           {# Sector selector #}
           <div id="input-sector-group" class="space-y-3">
             <label class="block text-xs font-mono uppercase tracking-widest text-ink-subtle">01 · Choose Project Sector</label>
             <div id="sector-pill-selector" class="grid grid-cols-3 gap-3">
-              <button id="btn-sec-infra" onclick="setEstimatorSector('infra')" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-on-brand bg-brand border-brand shadow-sm">
+              <button id="btn-sec-infra" type="button" data-sector="infra" aria-pressed="true" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-on-brand bg-brand border-brand shadow-sm">
                 Infrastructure
               </button>
-              <button id="btn-sec-comm" onclick="setEstimatorSector('comm')" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink">
+              <button id="btn-sec-comm" type="button" data-sector="comm" aria-pressed="false" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink">
                 Commercial
               </button>
-              <button id="btn-sec-res" onclick="setEstimatorSector('res')" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink">
+              <button id="btn-sec-res" type="button" data-sector="res" aria-pressed="false" class="py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink">
                 Residential
               </button>
             </div>
@@ -235,7 +240,7 @@
               <span id="slider-budget-value" class="text-brand-strong font-bold">£5,000,000</span>
             </div>
             <div class="relative flex items-center">
-              <input id="slider-budget" type="range" min="1" max="10" value="5" oninput="updateEstimator()" class="w-full h-2 bg-line/80 rounded-lg appearance-none cursor-pointer accent-brand" aria-label="Anticipated construction build cost slider">
+              <input id="slider-budget" type="range" min="1" max="10" value="5" class="w-full h-2 bg-line/80 rounded-lg appearance-none cursor-pointer accent-brand" aria-label="Anticipated construction build cost slider">
             </div>
             <div class="flex justify-between text-[10px] font-mono text-ink-subtle">
               <span>£500k</span>
@@ -250,22 +255,22 @@
             <div id="services-checkbox-grid" class="grid sm:grid-cols-2 gap-3">
               
               <label id="lbl-check-qs" class="flex items-center gap-3 p-3.5 rounded-xl border border-brand bg-brand-soft/50 text-brand-strong cursor-pointer shadow-sm transition-all">
-                <input id="check-service-qs" type="checkbox" checked onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Quantity Surveying & Cost Audits service">
+                <input id="check-service-qs" type="checkbox" checked class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Quantity Surveying & Cost Audits service">
                 <span class="text-xs font-semibold text-ink">Quantity Surveying & Auditing</span>
               </label>
 
               <label id="lbl-check-bim" class="flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all">
-                <input id="check-service-bim" type="checkbox" onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include BIM Coordination & 3D Modeling service">
+                <input id="check-service-bim" type="checkbox" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include BIM Coordination & 3D Modeling service">
                 <span class="text-xs font-semibold text-ink">BIM & 3D Coordination</span>
               </label>
 
               <label id="lbl-check-pm" class="flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all">
-                <input id="check-service-pm" type="checkbox" onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Project Management & Employer Agent service">
+                <input id="check-service-pm" type="checkbox" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Project Management & Employer Agent service">
                 <span class="text-xs font-semibold text-ink">Project Management / EA</span>
               </label>
 
               <label id="lbl-check-proc" class="flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all">
-                <input id="check-service-proc" type="checkbox" onchange="updateEstimator()" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Bid Administration & Procurement service">
+                <input id="check-service-proc" type="checkbox" class="rounded border-line text-brand focus:ring-brand w-4 h-4 accent-brand" aria-label="Include Bid Administration & Procurement service">
                 <span class="text-xs font-semibold text-ink">Tenders & Procurement</span>
               </label>
 
@@ -294,7 +299,7 @@
             <div id="estimator-footer-meta" class="text-xs text-ink-muted">
               Estimated scope is tailored for <span id="output-meta-scope" class="font-bold text-ink">Infrastructure development</span>.
             </div>
-            <button id="btn-copy-scope" onclick="copyProjectScope()" class="btn btn-primary text-xs !px-5 !py-3 flex items-center justify-center gap-2" aria-label="Copy generated project scope specification to clipboard">
+            <button id="btn-copy-scope" type="button" class="btn btn-primary text-xs !px-5 !py-3 flex items-center justify-center gap-2" aria-label="Copy generated project scope specification to clipboard">
               <svg id="svg-copy-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
               <span id="btn-copy-text">Copy Scope Blueprint</span>
             </button>
@@ -490,7 +495,7 @@
         <div id="testimonial-interactive-tabs" class="space-y-2 max-w-sm">
           <label class="block text-xs font-mono uppercase tracking-widest text-ink-subtle mb-3">SELECT CLIENT REPORT</label>
           {% for t in featured_testimonials %}
-          <button id="btn-testimonial-tab-{{ forloop.counter }}" onclick="switchTestimonial({{ forloop.index }})" class="w-full text-left p-3.5 rounded-xl transition-all flex items-center gap-3 border {% if forloop.first %}border-brand bg-brand-soft/50 text-brand-strong font-bold shadow-sm{% else %}border-line bg-surface-raised text-ink-muted hover:border-brand/30 hover:text-ink{% endif %}" aria-label="View testimonial from {{ t.client_name }}">
+          <button id="btn-testimonial-tab-{{ forloop.counter }}" type="button" data-testimonial-index="{{ forloop.counter }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" class="w-full text-left p-3.5 rounded-xl transition-all flex items-center gap-3 border {% if forloop.first %}border-brand bg-brand-soft/50 text-brand-strong font-bold shadow-sm{% else %}border-line bg-surface-raised text-ink-muted hover:border-brand/30 hover:text-ink{% endif %}" aria-label="View testimonial from {{ t.client_name }}">
             <span class="w-8 h-8 rounded-full bg-surface-sunken border border-line flex items-center justify-center text-xs font-mono font-bold text-ink shrink-0">{{ t.initials }}</span>
             <span class="text-xs">{{ t.client_name }}</span>
           </button>
@@ -510,7 +515,7 @@
         <div id="testimonials-recessed-deck" class="border border-line/60 bg-surface-sunken rounded-3xl p-5 sm:p-8 h-full flex flex-col justify-center relative min-h-[340px] shadow-xs overflow-hidden">
           
           {% for t in featured_testimonials %}
-          <figure id="testimonial-figure-{{ forloop.index }}" class="card bg-surface-raised p-6 sm:p-8 shadow-md border border-line transition-all duration-500 {% if forloop.first %}opacity-100 scale-100 relative z-10{% else %}opacity-0 scale-95 absolute inset-5 sm:inset-8 pointer-events-none{% endif %}">
+          <figure id="testimonial-figure-{{ forloop.counter }}" class="card bg-surface-raised p-6 sm:p-8 shadow-md border border-line transition-all duration-500 {% if forloop.first %}opacity-100 scale-100 relative z-10{% else %}opacity-0 scale-95 absolute inset-5 sm:inset-8 pointer-events-none{% endif %}">
             {% if t.headline %}<p class="font-semibold text-ink text-lg mb-3">{{ t.headline }}</p>{% endif %}
             <blockquote class="text-ink-muted leading-relaxed mb-6">"{{ t.quote }}"</blockquote>
             <figcaption class="flex items-center gap-3 border-t border-line pt-4">
@@ -554,279 +559,10 @@
 {% endblock %}
 
 {% block extra_js %}
-<script id="home-interactive-script">
-  // ==========================================
-  // 1. BIM WIREFRAME & LAYERS SWAP
-  // ==========================================
-  const layers = {
-    bim: {
-      svgId: 'svg-layer-bim',
-      btnId: 'btn-layer-bim',
-      numId: 'layer-num-bim',
-      deliverable: '3D CAD Wireframe Schema'
-    },
-    qs: {
-      svgId: 'svg-layer-qs',
-      btnId: 'btn-layer-qs',
-      numId: 'layer-num-qs',
-      deliverable: 'Real-Time Bill of Quantities'
-    },
-    timeline: {
-      svgId: 'svg-layer-timeline',
-      btnId: 'btn-layer-timeline',
-      numId: 'layer-num-timeline',
-      deliverable: 'RICS Delivery Timeline Path'
-    }
-  };
-
-  function switchBimLayer(activeKey) {
-    Object.keys(layers).forEach((key) => {
-      const config = layers[key];
-      const svg = document.getElementById(config.svgId);
-      const btn = document.getElementById(config.btnId);
-      const num = document.getElementById(config.numId);
-      
-      if (key === activeKey) {
-        // Activate
-        if (svg) {
-          svg.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
-          svg.classList.add('opacity-100', 'scale-100');
-        }
-        if (btn) {
-          btn.className = "w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-brand bg-brand-soft/50 text-brand-strong font-semibold shadow-sm";
-        }
-        if (num) {
-          num.className = "w-8 h-8 rounded-full bg-brand text-on-brand flex items-center justify-center text-xs font-mono font-bold shadow-sm";
-        }
-        
-        // Update HUD
-        const deliverableSpan = document.getElementById('span-active-deliverable');
-        if (deliverableSpan) {
-          deliverableSpan.innerText = config.deliverable;
-        }
-        
-        const statusSpan = document.getElementById('hud-status-active');
-        if (statusSpan) {
-          statusSpan.innerText = `SYS: MODEL_LOADED // LAYER_${key.toUpperCase()}_ENGAGED`;
-        }
-      } else {
-        // Deactivate
-        if (svg) {
-          svg.classList.remove('opacity-100', 'scale-100');
-          svg.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
-        }
-        if (btn) {
-          btn.className = "w-full text-left p-4 rounded-xl transition-all flex items-center gap-4 border border-line bg-surface-raised hover:border-brand-strong/30 hover:shadow-xs";
-        }
-        if (num) {
-          num.className = "w-8 h-8 rounded-full bg-surface-sunken flex items-center justify-center text-xs font-mono text-ink-subtle border border-line/50";
-        }
-      }
-    });
-  }
-
-  // Mouse move tracker for blueprint workspace HUD coordinate simulation
-  const board = document.getElementById('canvas-drawing-board');
-  if (board) {
-    board.addEventListener('mousemove', (e) => {
-      const rect = board.getBoundingClientRect();
-      const x = (e.clientX - rect.left).toFixed(2);
-      const y = (e.clientY - rect.top).toFixed(2);
-      const coords = document.getElementById('hud-coordinates');
-      if (coords) {
-        coords.innerText = `X: ${x} / Y: ${y}`;
-      }
-    });
-  }
-
-  // ==========================================
-  // 2. PROJECT FEE & SCOPE ESTIMATOR
-  // ==========================================
-  let activeSector = 'infra';
-  
-  const sectorWeights = {
-    infra: { feePercent: 0.012, label: 'Infrastructure & Civils', baseMonths: 18 },
-    comm: { feePercent: 0.018, label: 'Commercial Developments', baseMonths: 14 },
-    res: { feePercent: 0.022, label: 'High-End Residential', baseMonths: 10 }
-  };
-
-  const sliderScales = [
-    500000, 1000000, 2500000, 5000000, 7500000, 
-    10000000, 15000000, 20000000, 35000000, 50000000
-  ];
-
-  function setEstimatorSector(sector) {
-    activeSector = sector;
-    
-    // Update active button classes
-    ['infra', 'comm', 'res'].forEach((sec) => {
-      const btn = document.getElementById(`btn-sec-${sec}`);
-      if (sec === sector) {
-        btn.className = "py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-on-brand bg-brand border-brand shadow-sm";
-      } else {
-        btn.className = "py-3 px-4 rounded-xl text-xs font-semibold border transition-all text-ink-muted border-line bg-surface-raised hover:border-line-strong hover:text-ink";
-      }
-    });
-
-    updateEstimator();
-  }
-
-  function updateEstimator() {
-    const slider = document.getElementById('slider-budget');
-    const index = parseInt(slider.value, 10) - 1;
-    const rawBudget = sliderScales[index];
-    
-    // Format slider display
-    const formattedBudget = rawBudget >= 1000000 
-      ? `£${(rawBudget / 1000000).toFixed(1).replace('.0', '')}M` 
-      : `£${(rawBudget / 1000).toFixed(0)}k`;
-    
-    document.getElementById('slider-budget-value').innerText = formattedBudget;
- 
-    // Check service modifiers
-    const checks = {
-      qs: document.getElementById('check-service-qs').checked,
-      bim: document.getElementById('check-service-bim').checked,
-      pm: document.getElementById('check-service-pm').checked,
-      proc: document.getElementById('check-service-proc').checked
-    };
-
-    // Update labels border highlights based on checkbox state
-    Object.keys(checks).forEach((srv) => {
-      const lbl = document.getElementById(`lbl-check-${srv}`);
-      if (lbl) {
-        if (checks[srv]) {
-          lbl.className = "flex items-center gap-3 p-3.5 rounded-xl border border-brand bg-brand-soft/50 text-brand-strong cursor-pointer shadow-sm transition-all";
-        } else {
-          lbl.className = "flex items-center gap-3 p-3.5 rounded-xl border border-line bg-surface-raised cursor-pointer hover:border-brand-strong/30 hover:shadow-xs transition-all";
-        }
-      }
-    });
-
-    // Calculate modifier count (at least 1 for base calculations)
-    const activeCount = Object.values(checks).filter(Boolean).length;
-    
-    // Fee logic
-    const config = sectorWeights[activeSector];
-    let calculatedRate = config.feePercent;
-    
-    // Adjust rate based on service configuration complexity
-    calculatedRate = calculatedRate * (0.4 + (0.15 * activeCount));
-    
-    const feeMid = rawBudget * calculatedRate;
-    const feeMin = feeMid * 0.85;
-    const feeMax = feeMid * 1.15;
-
-    // Helper to format currency
-    const formatCurrency = (val) => {
-      if (val >= 1000000) return `£${(val / 1000000).toFixed(2)}M`;
-      if (val >= 1000) return `£${(val / 1000).toFixed(0)}k`;
-      return `£${val.toFixed(0)}`;
-    };
-
-    const feeString = activeCount === 0 
-      ? 'Select services' 
-      : `${formatCurrency(feeMin)} - ${formatCurrency(feeMax)}`;
-
-    document.getElementById('output-fee-range').innerText = feeString;
-
-    // Timeline duration logic
-    let estMonths = config.baseMonths;
-    if (index > 4) estMonths += Math.floor((index - 4) * 1.5);
-    if (checks.pm) estMonths = Math.round(estMonths * 1.1);
-    
-    const durationString = activeCount === 0 
-      ? 'Select services' 
-      : `${Math.round(estMonths * 0.9)} - ${Math.round(estMonths * 1.15)} Mos`;
-    document.getElementById('output-timeline-duration').innerText = durationString;
-
-    // Metadata description
-    document.getElementById('output-meta-scope').innerText = config.label;
-  }
-
-  // Copy scope blueprint statement to clipboard with visual microfeedback
-  function copyProjectScope() {
-    const slider = document.getElementById('slider-budget');
-    const index = parseInt(slider.value, 10) - 1;
-    const rawBudget = sliderScales[index];
-    const budgetStr = rawBudget >= 1000000 ? `£${rawBudget / 1000000}M` : `£${rawBudget / 1000}k`;
-
-    const config = sectorWeights[activeSector];
-    
-    const servicesChecked = [];
-    if (document.getElementById('check-service-qs').checked) servicesChecked.push('Quantity Surveying & Cost Audits');
-    if (document.getElementById('check-service-bim').checked) servicesChecked.push('BIM & 3D Coordination');
-    if (document.getElementById('check-service-pm').checked) servicesChecked.push('Project Management & Employer Agent');
-    if (document.getElementById('check-service-proc').checked) servicesChecked.push('Tendering & Procurement Administration');
-
-    const feeText = document.getElementById('output-fee-range').innerText;
-    const durationText = document.getElementById('output-timeline-duration').innerText;
-
-    const scopeBody = `--- PIONEER CONSULTANTS SCOPE BLUEPRINT ---
-Sector Focus: ${config.label}
-Anticipated Construction Budget: ${budgetStr}
-Professional Services Configured:
-${servicesChecked.map(s => ` - [x] ${s}`).join('\n') || ' - None selected'}
-
-Estimated Consultancy Fee Bracket: ${feeText}
-Target Project Cycle Duration: ${durationText}
-Timestamp: ${new Date().toLocaleDateString()}
-------------------------------------------
-Please share this blueprint with your team or submit it directly during our consultation.`;
-
-    navigator.clipboard.writeText(scopeBody).then(() => {
-      const btnText = document.getElementById('btn-copy-text');
-      const btnIcon = document.getElementById('svg-copy-icon');
-      
-      if (btnText && btnIcon) {
-        btnText.innerText = "Blueprint Copied!";
-        btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />`;
-        
-        setTimeout(() => {
-          btnText.innerText = "Copy Scope Blueprint";
-          btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />`;
-        }, 2500);
-      }
-    });
-  }
-
-  // ==========================================
-  // 3. INTERACTIVE CLIENT VOICES CAROUSEL
-  // ==========================================
-  function switchTestimonial(index) {
-    const tabsCount = document.querySelectorAll('[id^="btn-testimonial-tab-"]').length;
-    
-    for (let i = 1; i <= tabsCount; i++) {
-      const btn = document.getElementById(`btn-testimonial-tab-${i}`);
-      const figure = document.getElementById(`testimonial-figure-${i}`);
-      
-      if (i === index) {
-        // Activate button
-        if (btn) {
-          btn.className = "w-full text-left p-3.5 rounded-xl transition-all flex items-center gap-3 border border-brand bg-brand-soft/50 text-brand-strong font-bold shadow-sm";
-        }
-        // Activate figure
-        if (figure) {
-          figure.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
-          figure.classList.add('opacity-100', 'scale-100', 'relative', 'z-10');
-        }
-      } else {
-        // Deactivate button
-        if (btn) {
-          btn.className = "w-full text-left p-3.5 rounded-xl transition-all flex items-center gap-3 border border-line bg-surface-raised text-ink-muted hover:border-brand/30 hover:text-ink";
-        }
-        // Deactivate figure
-        if (figure) {
-          figure.classList.remove('opacity-100', 'scale-100', 'relative', 'z-10');
-          figure.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'absolute');
-        }
-      }
-    }
-  }
-
-  // Bootstrap initial states
-  document.addEventListener('DOMContentLoaded', () => {
-    updateEstimator();
-  });
-</script>
+{% comment %}
+  Interactivity lives in a static file, not inline: production enforces
+  script-src 'self' + nonce, which blocks inline scripts without a nonce and
+  inline on* handlers outright. See the header of the JS file.
+{% endcomment %}
+<script src="{% static 'js/home-interactive.js' %}" defer></script>
 {% endblock %}
