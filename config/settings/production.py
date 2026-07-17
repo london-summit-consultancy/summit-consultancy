@@ -3,7 +3,7 @@ from csp.constants import NONCE, NONE, SELF
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from .base import *  # noqa: F401, F403
-from .base import ALLOWED_HOSTS, env
+from .base import ALLOWED_HOSTS, DATABASES, env
 
 DEBUG = False
 SECURE_SSL_REDIRECT = True
@@ -122,6 +122,33 @@ STORAGES = {
 # Tender documents are on R2 — the download view issues a redirect to a signed,
 # expiring object URL rather than streaming bytes through the app server.
 TENDER_DOCS_SIGNED_URLS = True
+
+# Redis is optional in production to keep the baseline deployment free of a paid
+# Upstash instance. When REDIS_URL is unset, fall back to an in-process cache and
+# run Celery tasks eagerly (inline, in the web process) instead of via a broker —
+# so a single web Machine serves the whole app with no external broker/cache and
+# no separate worker (see bin/start.sh, which then skips honcho/the worker).
+# Setting REDIS_URL later flips both back to Redis + a real worker with no code
+# change. Eager mode also sidesteps the local-disk tender staging hand-off that a
+# separate worker Machine could not see (the task runs in the same process).
+if not env("REDIS_URL", default=""):
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "summit-locmem",
+        }
+    }
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = False
+
+# The database is reached over a PgBouncer transaction-pooled endpoint (Neon's
+# `-pooler` host), which does not support server-side cursors or psycopg's
+# prepared statements — disable both so Django works correctly over the pooler.
+# Both are harmless on a direct (non-pooled) connection too. TLS is enforced by
+# the DATABASE_URL itself (sslmode=require & channel_binding=require); the
+# credential lives only in the encrypted Fly secret, never in code or fly.toml.
+DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
+DATABASES["default"].setdefault("OPTIONS", {})["prepare_threshold"] = None
 
 # Content Security Policy (django-csp 4.x dict API) — enforced.
 # All first-party assets (fonts, HTMX, CSS, JS, and now media too) are

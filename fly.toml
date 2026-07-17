@@ -1,11 +1,12 @@
-# fly.toml app configuration file for rivex-summit.
+# fly.toml app configuration file for summit-consultancy.
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 
-app = 'rivex-summit'
+app = 'summit-consultancy'
 primary_region = 'fra' # Frankfurt — closest Fly region to a UK consultancy
 console_command = '/code/manage.py shell'
 
 [build]
+  dockerfile = 'Dockerfile'
 
 # Runs in a temporary, secret-and-env-aware Machine before the new version's
 # Machines start (Fly's equivalent of Render's preDeployCommand, but not
@@ -17,8 +18,8 @@ console_command = '/code/manage.py shell'
 
 [env]
   DJANGO_SETTINGS_MODULE = 'config.settings.production'
-  ALLOWED_HOSTS = 'rivex-summit.fly.dev'
-  SITE_DOMAIN = 'rivex-summit.fly.dev' # sitemap.xml host + allauth emails — update if a custom domain is added later
+  ALLOWED_HOSTS = 'summit-consultancy.fly.dev'
+  SITE_DOMAIN = 'summit-consultancy.fly.dev' # sitemap.xml host + allauth emails — update if a custom domain is added later
   # Local DeepSeek AI is an on-prem endpoint (Ollama etc.), not reachable from
   # Fly. Explicitly blank so is_enabled() is False in production instead of
   # inheriting the local-dev default (http://localhost:11434/v1), which would
@@ -46,11 +47,17 @@ console_command = '/code/manage.py shell'
   app = './bin/start.sh'
 
 [http_service]
-  internal_port = 8000 # must match the port gunicorn binds to in Procfile
+  internal_port = 8443 # must match the port gunicorn binds to in Procfile/bin/start.sh
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  # Keep one Machine warm. At 0, the proxy autostops the only Machine whenever it
+  # sees no traffic — including part-way through a boot, before it can pass a
+  # health check and become eligible for traffic. That deadlocks: boot, get
+  # stopped, restart on the next request, repeat, serving 503 throughout. Scaling
+  # this single Machine to zero also made every cold visitor wait out a full
+  # Django boot, so there was little to win here anyway.
+  min_machines_running = 1
   processes = ['app']
 
   [[http_service.checks]]
@@ -60,6 +67,22 @@ console_command = '/code/manage.py shell'
     method = 'GET'
     path = '/'
     protocol = 'http'
+
+    # Both headers are load-bearing — without them this check can never return
+    # the 200 Fly requires (it does not follow redirects, so anything but 200
+    # fails the deploy):
+    #
+    # Host — the check connects straight to the Machine, not through the edge,
+    #   so it does not send the public hostname. Django validates Host against
+    #   ALLOWED_HOSTS before any view runs and answers 400 DisallowedHost.
+    # X-Forwarded-Proto — this probe is plain HTTP (TLS terminates at Fly's
+    #   edge, which is why protocol is 'http'). SECURE_SSL_REDIRECT in
+    #   config/settings/production.py 301-redirects anything Django does not
+    #   consider secure, and SECURE_PROXY_SSL_HEADER only trusts this header.
+    #   Faking it here is safe: nothing off-Machine can reach this port.
+    [http_service.checks.headers]
+      Host = 'summit-consultancy.fly.dev'
+      X-Forwarded-Proto = 'https'
 
 [[vm]]
   size = 'shared-cpu-1x'

@@ -13,3 +13,14 @@ __pycache__
 .pytest_cache
 .ruff_cache
 .env
+
+# Non-project / tooling files — keep them out of the image and out of Fly's cloud.
+.agents
+.github
+.gitignore
+docs
+tests
+*.md
+hero-demo.html
+.env.example
+skills-lock.json

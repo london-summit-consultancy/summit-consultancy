@@ -36,6 +36,21 @@ ENV PATH="/code/.venv/bin:$PATH" \
 
 RUN chmod +x bin/start.sh
 
-EXPOSE 8000
+# Collect static at build time, NOT on Machine boot. WhiteNoise's
+# CompressedManifestStaticFilesStorage hash-renames every file, rewrites the
+# url() references between them, then gzip- AND brotli-compresses each one:
+# ~5 minutes for this project's 481 files on a shared-cpu-1x. Doing that in
+# bin/start.sh delayed gunicorn's bind past the health check's grace period, so
+# `fly deploy` timed out waiting on a Machine that was still compressing CSS.
+# Baked into the image, it lands on every Machine already done.
+# SECRET_KEY is required at settings import (config/settings/base.py) but unused
+# by collectstatic; a build-only throwaway keeps the real secret out of the
+# image layers. STATIC_ROOT (/code/staticfiles) is in .dockerignore, so the
+# COPY above can't shadow this with a stale local build.
+RUN DJANGO_SETTINGS_MODULE=config.settings.production \
+    SECRET_KEY=build-only-not-a-real-secret \
+    uv run --no-sync python manage.py collectstatic --noinput
+
+EXPOSE 8443
 
 CMD ["./bin/start.sh"]
